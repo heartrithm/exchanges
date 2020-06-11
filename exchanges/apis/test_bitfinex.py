@@ -1,4 +1,4 @@
-from . import ExchangeApiException
+from .base import ExchangeApiException
 from .bitfinex import BitfinexApi, BitfinexNonceException
 import requests_mock
 import unittest

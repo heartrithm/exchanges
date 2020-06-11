@@ -1,4 +1,4 @@
-from . import BaseExchangeApi, ExchangeApiException
+from .base import BaseExchangeApi, ExchangeApiException
 import base64
 import re
 import simplejson

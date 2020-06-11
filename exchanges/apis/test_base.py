@@ -1,4 +1,4 @@
-from . import BaseExchangeApi
+from .base import BaseExchangeApi
 import requests_mock
 import unittest
 
