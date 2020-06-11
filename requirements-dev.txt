@@ -1,5 +1,7 @@
 -r requirements.txt
 -r requirements-test.txt
+codecov
+coverage
 flake8
 pip-tools
 pytest

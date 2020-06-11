@@ -1,0 +1,39 @@
+version: 2.1
+orbs:
+  python: circleci/python@0.2.1
+
+jobs:
+  build-and-test:
+    executor: python/default
+    steps:
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
+      - run:
+          name: install dev/test requirements
+          command: pip install -r requirements-dev.txt
+      - run:
+          name: lint checks
+          command: |
+            for f in `find ./ -name '*py' | grep -v test | grep -v venv`; do pyflakes $f; done
+      - run:
+          name: run tests
+          command: |
+            coverage run -m pytest
+
+      - store_test_results:
+          path: .coverage
+      - store_artifacts:
+          path: .coverage
+          destination: .coverage
+      # - run:
+      #     name: codecov upload
+      #     command: |
+      #       codecov -t ${CODECOV_TOKEN}
+
+workflows:
+  main:
+    jobs:
+      - build-and-test
+
