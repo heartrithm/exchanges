@@ -27,7 +27,7 @@ class BaseExchangeApi:
         self.key = key
         self.secret = secret
 
-    def get_symbol(stake_currency, trade_currency): # pragma: no cover
+    def get_symbol(stake_currency, trade_currency):  # pragma: no cover
         # Return a str for the exchange likes to see a symbol given the stake/trade currencies
         # Ex BTCUSDT
         raise NotImplementedError
@@ -69,12 +69,7 @@ class BaseExchangeApi:
 
         try:
             response = self.session.request(
-                method,
-                url,
-                params=params,
-                json=data,
-                headers=headers,
-                timeout=self.TIMEOUT,
+                method, url, params=params, json=data, headers=headers, timeout=self.TIMEOUT,
             )
             response.raise_for_status()
             parsed = ujson.loads(response.content)
@@ -88,10 +83,7 @@ class BaseExchangeApi:
             raise ExchangeApiException(method, url, response.status_code, error_text)
         except ValueError as exc:
             raise ExchangeApiException(
-                method,
-                url,
-                response.status_code,
-                "Could not decode JSON response: %s" % exc,
+                method, url, response.status_code, "Could not decode JSON response: %s" % exc,
             )
 
     def parse_error_text(self, response):  # pragma: no cover
@@ -114,9 +106,7 @@ class BaseExchangeApi:
         """
         encoded_message = message.encode() if isinstance(message, str) else message
 
-        return hmac.new(
-            secret.encode("utf8"), encoded_message, hashlib.sha384
-        ).hexdigest()
+        return hmac.new(secret.encode("utf8"), encoded_message, hashlib.sha384).hexdigest()
 
 
 class ExchangeApiException(Exception):
@@ -125,7 +115,4 @@ class ExchangeApiException(Exception):
         self.url = url
         self.status_code = status_code
         self.message = message
-        super().__init__(
-            "%s %s returned status code %s with message: %s"
-            % (method, url, status_code, message)
-        )
+        super().__init__("%s %s returned status code %s with message: %s" % (method, url, status_code, message))

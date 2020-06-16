@@ -49,9 +49,7 @@ class BaseTest(unittest.TestCase):
 
             # GET with params (check url encoding)
             m.get("http://example.com/x?param=data%20and%20%3C%2C%20stuff", text="[]")
-            response = c.request(
-                "http://example.com/x", params={"param": "data and <, stuff"}
-            )
+            response = c.request("http://example.com/x", params={"param": "data and <, stuff"})
             self.assertEqual(response, [])
 
             # Invalid JSON
