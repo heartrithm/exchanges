@@ -27,7 +27,9 @@ class BaseExchangeApi:
         self.key = key
         self.secret = secret
 
-    def get_symbol(exchange, stake_currency, trade_currency):
+    def get_symbol(stake_currency, trade_currency): # pragma: no cover
+        # Return a str for the exchange likes to see a symbol given the stake/trade currencies
+        # Ex BTCUSDT
         raise NotImplementedError
 
     @property
