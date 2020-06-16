@@ -1,4 +1,4 @@
-from .base import BaseExchangeApi, ExchangeApiException
+from ..base import BaseExchangeApi, ExchangeApiException
 import requests_mock
 import unittest
 

@@ -1,5 +1,5 @@
-from .base import ExchangeApiException
-from .bitfinex import BitfinexApi, BitfinexNonceException
+from ..base import ExchangeApiException
+from ..bitfinex import BitfinexApi, BitfinexNonceException
 from exchanges import exchange_factory
 import requests_mock
 import unittest
