@@ -1,7 +1,7 @@
 from .base import BaseExchangeApi, ExchangeApiException
 import base64
 import re
-import simplejson
+import json
 import ujson
 
 
@@ -64,11 +64,11 @@ class BitfinexApi(BaseExchangeApi):
             payload_object["request"] = api_path
             payload_object["nonce"] = nonce
             payload_object.update(data)
-            # Important to use simplejson here, the format has to match what bitfinex expects (ujson strips extra space, which causes invalid api key)
-            payload = simplejson.dumps(payload_object)
+            # Important to use json here, the format has to match what bitfinex expects (ujson strips extra space, which causes invalid api key)
+            payload = json.dumps(payload_object)
         elif api_version == 2:
-            # Important to use simplejson here, the format has to match what bitfinex expects (ujson strips extra space, which causes invalid api key)
-            payload = "/api" + api_path + nonce + simplejson.dumps(data)
+            # Important to use json here, the format has to match what bitfinex expects (ujson strips extra space, which causes invalid api key)
+            payload = "/api" + api_path + nonce + json.dumps(data)
         return payload
 
     def auth_headers(self, key, secret, api_version, nonce, payload):

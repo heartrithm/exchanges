@@ -7,5 +7,5 @@ setup(
     version="1.1.3",
     description="Exchange APIs",
     packages=find_packages(),
-    install_requires=["ujson", "simplejson"],
+    install_requires=["requests", "ujson"],
 )
