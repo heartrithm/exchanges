@@ -6,7 +6,8 @@ import ujson
 
 
 class BitfinexApi(BaseExchangeApi):
-    def get_symbol(self, exchange, stake_currency, trade_currency):
+    @staticmethod
+    def get_symbol(stake_currency, trade_currency):
         return "t{}{}".format(trade_currency, stake_currency)
 
     def brequest(self, api_version, endpoint=None, authenticate=False, method="GET", params=None, data=None):
