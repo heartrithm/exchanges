@@ -21,11 +21,14 @@ class BaseExchangeApi:
     RETRIES = 2
     RETRY_BACKOFF_FACTOR = 0.3
     RETRY_STATUSES = (500, 502, 503, 504)
-    DEFAULT_HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+    DEFAULT_HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
 
     def __init__(self, key=None, secret=None):
         self.key = key
         self.secret = secret
+
+    def get_symbol(exchange, stake_currency, trade_currency):
+        raise NotImplementedError
 
     @property
     def session(self):
@@ -41,18 +44,18 @@ class BaseExchangeApi:
             connect=self.RETRIES,
             backoff_factor=self.RETRY_BACKOFF_FACTOR,
             # GET requests only, as we don't know what is being modified by POST requests
-            status_forcelist=('GET',),
+            status_forcelist=("GET",),
         )
 
         # Handle for all requests that start with http or https
         adapter = HTTPAdapter(max_retries=retry)
-        self._session.mount('http://', adapter)
-        self._session.mount('https://', adapter)
+        self._session.mount("http://", adapter)
+        self._session.mount("https://", adapter)
 
         return self._session
 
-    def request(self, url, method='GET', params=None, data=None, headers=None):
-        assert method in ['GET', 'POST']
+    def request(self, url, method="GET", params=None, data=None, headers=None):
+        assert method in ["GET", "POST"]
         if params:
             assert method == "GET", "GET must be used with params"
         if data:
@@ -63,7 +66,9 @@ class BaseExchangeApi:
             logger.debug("Request Headers: %s" % headers)
 
         try:
-            response = self.session.request(method, url, params=params, json=data, headers=headers, timeout=self.TIMEOUT)
+            response = self.session.request(
+                method, url, params=params, json=data, headers=headers, timeout=self.TIMEOUT
+            )
             response.raise_for_status()
             parsed = ujson.loads(response.content)
             return parsed
@@ -97,7 +102,7 @@ class BaseExchangeApi:
         """
         encoded_message = message.encode() if isinstance(message, str) else message
 
-        return hmac.new(secret.encode('utf8'), encoded_message, hashlib.sha384).hexdigest()
+        return hmac.new(secret.encode("utf8"), encoded_message, hashlib.sha384).hexdigest()
 
 
 class ExchangeApiException(Exception):

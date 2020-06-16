@@ -1,11 +1,11 @@
 from .base import ExchangeApiException
 from .bitfinex import BitfinexApi, BitfinexNonceException
+from exchanges import exchange_factory
 import requests_mock
 import unittest
 
 
 class BitfinexTest(unittest.TestCase):
-
     def test_auth_v1(self):
         c = BitfinexApi("my key", "my secret")
         with requests_mock.mock() as m:
@@ -14,7 +14,7 @@ class BitfinexTest(unittest.TestCase):
             self.assertEqual(result["id"], 124124)
 
     def test_public_v1(self):
-        c = BitfinexApi()
+        c = exchange_factory("bitfinex")()
         with requests_mock.mock() as m:
             m.get("https://api.bitfinex.com/v1/pubticker/btcusd", text='{"mid":"244.755"}')
             self.assertEqual(c.brequest(1, "pubticker/btcusd"), {"mid": "244.755"})
@@ -22,8 +22,10 @@ class BitfinexTest(unittest.TestCase):
     def test_auth_v2(self):
         c = BitfinexApi("my key", "my secret")
         with requests_mock.mock() as m:
-            m.post("https://api.bitfinex.com/v2/auth/r/wallets", text='[["funding", "USD", 24570.03334688, 0, 500.143]]')
-            result = c.brequest(2, endpoint="auth/r/wallets", authenticate=True, method='POST')
+            m.post(
+                "https://api.bitfinex.com/v2/auth/r/wallets", text='[["funding", "USD", 24570.03334688, 0, 500.143]]'
+            )
+            result = c.brequest(2, endpoint="auth/r/wallets", authenticate=True, method="POST")
             self.assertEqual(result, [["funding", "USD", 24570.03334688, 0, 500.143]])
 
     def test_errors(self):
@@ -37,16 +39,22 @@ class BitfinexTest(unittest.TestCase):
                 c.brequest(1, "error")
 
             with self.assertRaises(ExchangeApiException):
-                m.get("https://api-pub.bitfinex.com/v2/error", text='["error", 2141, "Invalid Request"]', status_code=400)
+                m.get(
+                    "https://api-pub.bitfinex.com/v2/error", text='["error", 2141, "Invalid Request"]', status_code=400
+                )
                 c.brequest(2, "error")
 
             with self.assertRaises(ExchangeApiException):
-                m.get("https://api.bitfinex.com/v1/badjson", text='{badjson', status_code=400)
+                m.get("https://api.bitfinex.com/v1/badjson", text="{badjson", status_code=400)
                 c.brequest(1, "badjson")
 
             with self.assertRaises(ExchangeApiException):
                 # Simulate cloudflare failure
-                m.get("https://api.bitfinex.com/v1/html", text='blah blah <title>Invalid Request</title>blah', status_code=502)
+                m.get(
+                    "https://api.bitfinex.com/v1/html",
+                    text="blah blah <title>Invalid Request</title>blah",
+                    status_code=502,
+                )
                 c.brequest(1, "html")
 
             with self.assertRaises(BitfinexNonceException):
