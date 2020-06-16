@@ -1,4 +1,4 @@
-from .base import BaseExchangeApi
+from .base import BaseExchangeApi, ExchangeApiException
 import requests_mock
 import unittest
 
@@ -53,3 +53,8 @@ class BaseTest(unittest.TestCase):
                 "http://example.com/x", params={"param": "data and <, stuff"}
             )
             self.assertEqual(response, [])
+
+            # Invalid JSON
+            with self.assertRaises(ExchangeApiException):
+                m.get("http://example.com/badjson", text="[']")
+                response = c.request("http://example.com/badjson")
