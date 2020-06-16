@@ -1,7 +1,7 @@
 from .base import BaseExchangeApi, ExchangeApiException
 import base64
 import re
-import simplejson
+import json
 import ujson
 
 
@@ -10,14 +10,24 @@ class BitfinexApi(BaseExchangeApi):
     def get_symbol(stake_currency, trade_currency):
         return "t{}{}".format(trade_currency, stake_currency)
 
-    def brequest(self, api_version, endpoint=None, authenticate=False, method="GET", params=None, data=None):
+    def brequest(
+        self,
+        api_version,
+        endpoint=None,
+        authenticate=False,
+        method="GET",
+        params=None,
+        data=None,
+    ):
         # Inspired by https://raw.githubusercontent.com/faberquisque/pyfinex/master/pyfinex/api.py
         # Handle requests for both v1 and v2 versions of the API with one wrapper
         # Why both, you ask? v2 has better data, but does not support write requests (they push that to v2 websockets API)
         # So we have to use v1 for anything that writes
 
         assert api_version in [1, 2]
-        assert not endpoint.startswith("/v"), "endpoint should not be a full path, but the url after v1/v2"
+        assert not endpoint.startswith(
+            "/v"
+        ), "endpoint should not be a full path, but the url after v1/v2"
 
         base_url = "https://api.bitfinex.com"
         if api_version == 2 and authenticate is False:
@@ -33,7 +43,9 @@ class BitfinexApi(BaseExchangeApi):
         if authenticate:
             nonce = self.nonce()
             payload = self.generate_payload(api_version, api_path, nonce, data)
-            headers.update(self.auth_headers(self.key, self.secret, api_version, nonce, payload))
+            headers.update(
+                self.auth_headers(self.key, self.secret, api_version, nonce, payload)
+            )
 
         url = base_url + api_path
         try:
@@ -52,11 +64,11 @@ class BitfinexApi(BaseExchangeApi):
             payload_object["request"] = api_path
             payload_object["nonce"] = nonce
             payload_object.update(data)
-            # Important to use simplejson here, the format has to match what bitfinex expects (ujson strips extra space, which causes invalid api key)
-            payload = simplejson.dumps(payload_object)
+            # Important to use json here, the format has to match what bitfinex expects (ujson strips extra space, which causes invalid api key)
+            payload = json.dumps(payload_object)
         elif api_version == 2:
-            # Important to use simplejson here, the format has to match what bitfinex expects (ujson strips extra space, which causes invalid api key)
-            payload = "/api" + api_path + nonce + simplejson.dumps(data)
+            # Important to use json here, the format has to match what bitfinex expects (ujson strips extra space, which causes invalid api key)
+            payload = "/api" + api_path + nonce + json.dumps(data)
         return payload
 
     def auth_headers(self, key, secret, api_version, nonce, payload):
@@ -96,7 +108,11 @@ class BitfinexApi(BaseExchangeApi):
                 return "HTML: %s" % match.groups()[0]
             else:
                 # No title. We need to truncate in case it's an entire html page
-                return (response.text[:50] + "...") if len(response.text) > 50 else response.text
+                return (
+                    (response.text[:50] + "...")
+                    if len(response.text) > 50
+                    else response.text
+                )
 
         # All else
         return response.text

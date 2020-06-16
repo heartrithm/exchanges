@@ -1,5 +1,6 @@
 -r requirements.txt
-flake8
-pytest
+pyflakes
 requests_mock
-ujson
+codecov
+coverage
+pytest

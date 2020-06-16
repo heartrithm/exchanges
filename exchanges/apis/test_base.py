@@ -1,10 +1,9 @@
-from .base import BaseExchangeApi
+from .base import BaseExchangeApi, ExchangeApiException
 import requests_mock
 import unittest
 
 
 class BaseTest(unittest.TestCase):
-
     def test_nonce(self):
         c = BaseExchangeApi()
         nonce1 = c.nonce()
@@ -24,7 +23,10 @@ class BaseTest(unittest.TestCase):
     def test_sign(self):
         c = BaseExchangeApi()
         signature = c.sign("my secret", "The message to sign")
-        self.assertEqual(signature, "697c3fe5856f6bee86b6cd7379a44b305fa2a24196a7676268cbaaf636e469490d75f73d7834113e5d167b0d3b6ac8e2")
+        self.assertEqual(
+            signature,
+            "697c3fe5856f6bee86b6cd7379a44b305fa2a24196a7676268cbaaf636e469490d75f73d7834113e5d167b0d3b6ac8e2",
+        )
 
     def test_request(self):
         c = BaseExchangeApi()
@@ -47,5 +49,12 @@ class BaseTest(unittest.TestCase):
 
             # GET with params (check url encoding)
             m.get("http://example.com/x?param=data%20and%20%3C%2C%20stuff", text="[]")
-            response = c.request("http://example.com/x", params={"param": "data and <, stuff"})
+            response = c.request(
+                "http://example.com/x", params={"param": "data and <, stuff"}
+            )
             self.assertEqual(response, [])
+
+            # Invalid JSON
+            with self.assertRaises(ExchangeApiException):
+                m.get("http://example.com/badjson", text="[']")
+                response = c.request("http://example.com/badjson")

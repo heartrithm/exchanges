@@ -12,7 +12,7 @@ jobs:
       - python/save-cache
       - run:
           name: install dev/test requirements
-          command: pip install -r requirements-dev.txt
+          command: pip install -r requirements-test.txt
       - run:
           name: lint checks
           command: |
@@ -27,10 +27,10 @@ jobs:
       - store_artifacts:
           path: .coverage
           destination: .coverage
-      # - run:
-      #     name: codecov upload
-      #     command: |
-      #       codecov -t ${CODECOV_TOKEN}
+      - run:
+          name: codecov upload
+          command: |
+            codecov -t ${CODECOV_TOKEN}
 
 workflows:
   main:
