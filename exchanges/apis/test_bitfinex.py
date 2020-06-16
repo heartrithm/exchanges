@@ -98,6 +98,14 @@ class BitfinexTest(unittest.TestCase):
                 )
                 c.brequest(2, "nonce")
 
+            with self.assertRaises(ExchangeApiException):
+                m.get(
+                    "https://api-pub.bitfinex.com/v2/allelse",
+                    text='allelse',
+                    status_code=500,
+                )
+                c.brequest(2, "allelse")
+
     def test_public_v2(self):
         c = BitfinexApi()
         # One real call without a mock
