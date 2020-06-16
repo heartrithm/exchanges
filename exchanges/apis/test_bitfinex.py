@@ -13,6 +13,10 @@ class BitfinexTest(unittest.TestCase):
             result = c.brequest(1, "offer/cancel", authenticate=True, method="POST", data={"offer_id": 124124})
             self.assertEqual(result["id"], 124124)
 
+    def test_symbols(self):
+        c = exchange_factory("bitfinex")()
+        self.assertEqual("tETHUSD", c.get_symbol("USD", "ETH"))
+
     def test_public_v1(self):
         c = exchange_factory("bitfinex")()
         with requests_mock.mock() as m:
