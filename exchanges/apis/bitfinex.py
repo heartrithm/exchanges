@@ -6,16 +6,30 @@ import ujson
 
 
 class BitfinexApi(BaseExchangeApi):
-    @staticmethod
-    def get_symbol(stake_currency, trade_currency):
+    def get_symbol(self, stake_currency, trade_currency):
         return "t{}{}".format(trade_currency, stake_currency)
+
+    def unmake_bitfinex_symbol(self, bitfinex_symbol):
+        assert re.match(
+            "t[A-Z]{6,}", bitfinex_symbol
+        ), "Format of bitfinex_symbol should be t$trade_currency$stake_currency: {}".format(bitfinex_symbol)
+        # tETHUSD -> ETH/USD
+        return "{}/{}".format(bitfinex_symbol[1:-3], bitfinex_symbol[-3:])
+
+    def make_bitfinex_symbol(self, symbol):
+        assert re.match(
+            "[A-Z]{3,}/[A-Z]{3,}", symbol
+        ), "Format of symbol should be $trade_currency/$stake_currency: {}".format(symbol)
+        # ETH/USD -> tETHUSD
+        pieces = symbol.split("/")
+        return "t{}{}".format(pieces[0], pieces[1])
 
     def brequest(
         self, api_version, endpoint=None, authenticate=False, method="GET", params=None, data=None,
     ):
         # Inspired by https://raw.githubusercontent.com/faberquisque/pyfinex/master/pyfinex/api.py
         # Handle requests for both v1 and v2 versions of the API with one wrapper
-        # Why both, you ask? v2 has better data, but does not support write requests (they push that to v2 websockets API)
+        # Why both, you ask? v2 has better data, but does not support write requests (only in v2 websockets API)
         # So we have to use v1 for anything that writes
 
         assert api_version in [1, 2]
@@ -29,7 +43,7 @@ class BitfinexApi(BaseExchangeApi):
 
         headers = self.DEFAULT_HEADERS
 
-        # This is required because data for the signature must match the data that is passed in the body as json, even if empty
+        # Required because data for the signature must match the data that is passed in the body as json, even if empty
         data = data or {}
 
         if authenticate:
@@ -54,10 +68,11 @@ class BitfinexApi(BaseExchangeApi):
             payload_object["request"] = api_path
             payload_object["nonce"] = nonce
             payload_object.update(data)
-            # Important to use json here, the format has to match what bitfinex expects (ujson strips extra space, which causes invalid api key)
+            # Important to use json here, the format has to match what bitfinex expects
+            # (ujson strips extra space, which causes invalid api key)
             payload = json.dumps(payload_object)
         elif api_version == 2:
-            # Important to use json here, the format has to match what bitfinex expects (ujson strips extra space, which causes invalid api key)
+            # same note here about json
             payload = "/api" + api_path + nonce + json.dumps(data)
         return payload
 
