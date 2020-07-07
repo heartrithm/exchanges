@@ -7,22 +7,33 @@ import ujson
 
 class BitfinexApi(BaseExchangeApi):
     def get_symbol(self, stake_currency, trade_currency):
-        return "t{}{}".format(trade_currency, stake_currency)
+        return self.make_bitfinex_symbol(trade_currency + "/" + stake_currency)
+        # return "t{}{}".format(trade_currency, stake_currency)
 
     def unmake_bitfinex_symbol(self, bitfinex_symbol):
-        assert re.match(
-            "t[A-Z]{6,}", bitfinex_symbol
-        ), "Format of bitfinex_symbol should be t$trade_currency$stake_currency: {}".format(bitfinex_symbol)
-        # tETHUSD -> ETH/USD
-        return "{}/{}".format(bitfinex_symbol[1:-3], bitfinex_symbol[-3:])
+        assert re.match("t[A-Z]{3,}[:]?[A-Z]{3,}", bitfinex_symbol), (
+            "Format of bitfinex_symbol should be t$trade_currency$stake_currency or t$trade_currency:$stake_currency"
+            " (for TESTBTC, etc papertrading symbols): {}".format(bitfinex_symbol)
+        )
+        if ":TEST" in bitfinex_symbol:
+            # tTESTBTC:TESTUSDT -> TESTBTC/TESTUSDT
+            pieces = bitfinex_symbol.lstrip("t").split(":")
+            return "{}/{}".format(pieces[0], pieces[1])
+        else:
+            # tETHUSD -> ETH/USD
+            return "{}/{}".format(bitfinex_symbol[1:-3], bitfinex_symbol[-3:])
 
     def make_bitfinex_symbol(self, symbol):
         assert re.match(
             "[A-Z]{3,}/[A-Z]{3,}", symbol
         ), "Format of symbol should be $trade_currency/$stake_currency: {}".format(symbol)
-        # ETH/USD -> tETHUSD
         pieces = symbol.split("/")
-        return "t{}{}".format(pieces[0], pieces[1])
+        if "TEST" in pieces[0]:  # we're in bitfinex papertrading land, put a : between symbols
+            # TESTBTC/TESTUSDT -> tTESTBTC:TESTUSDT
+            return "t{}:{}".format(pieces[0], pieces[1])
+        else:
+            # ETH/USD -> tETHUSD
+            return "t{}{}".format(pieces[0], pieces[1])
 
     def brequest(
         self, api_version, endpoint=None, authenticate=False, method="GET", params=None, data=None,
