@@ -8,7 +8,9 @@ import ujson
 class BitfinexApi(BaseExchangeApi):
     def get_symbol(self, stake_currency, trade_currency):
         return self.make_bitfinex_symbol(trade_currency + "/" + stake_currency)
-        # return "t{}{}".format(trade_currency, stake_currency)
+
+    def get_pair(self, symbol):
+        return self.unmake_bitfinex_symbol(symbol)
 
     def unmake_bitfinex_symbol(self, bitfinex_symbol):
         assert re.match("t[A-Z]{3,}[:]?[A-Z]{3,}", bitfinex_symbol), (

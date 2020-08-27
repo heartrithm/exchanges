@@ -28,8 +28,13 @@ class BaseExchangeApi:
         self.secret = secret
 
     def get_symbol(self, stake_currency, trade_currency):  # pragma: no cover
-        # Return a str for the exchange likes to see a symbol given the stake/trade currencies
+        # Return a str for how the exchange likes to see a symbol given the stake/trade currencies
         # Ex BTCUSDT
+        raise NotImplementedError
+
+    def get_pair(self, symbol):  # pragma: no cover
+        # Return a str representing the pair, un-doing a get_symbol() with exchange-specific knowledge
+        # Ex BTC/USDT
         raise NotImplementedError
 
     @property
