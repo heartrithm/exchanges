@@ -18,8 +18,8 @@ class BitfinexTest(unittest.TestCase):
         self.assertEqual("tETHUSD", c.get_symbol("USD", "ETH"))
         self.assertEqual("ETH/USD", c.get_pair("tETHUSD"))
         self.assertEqual("tTESTBTC:TESTUSDT", c.get_symbol("TESTUSDT", "TESTBTC"))
-        self.assertEqual("ETH/USD", c.unmake_bitfinex_symbol("tETHUSD"))
-        self.assertEqual("TESTBTC/TESTUSDT", c.unmake_bitfinex_symbol("tTESTBTC:TESTUSDT"))
+        self.assertEqual("ETH/USD", c.unmake_symbol("tETHUSD"))
+        self.assertEqual("TESTBTC/TESTUSDT", c.unmake_symbol("tTESTBTC:TESTUSDT"))
 
     def test_public_v1(self):
         c = exchange_factory("bitfinex")()
