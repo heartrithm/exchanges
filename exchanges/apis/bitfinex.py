@@ -12,7 +12,7 @@ class BitfinexApi(BaseExchangeApi):
     def get_pair(self, symbol):
         return self.unmake_bitfinex_symbol(symbol)
 
-    def unmake_bitfinex_symbol(self, bitfinex_symbol):
+    def unmake_symbol(self, bitfinex_symbol):
         assert re.match("t[A-Z]{3,}[:]?[A-Z]{3,}", bitfinex_symbol), (
             "Format of bitfinex_symbol should be t$trade_currency$stake_currency or t$trade_currency:$stake_currency"
             " (for TESTBTC, etc papertrading symbols): {}".format(bitfinex_symbol)
@@ -25,7 +25,7 @@ class BitfinexApi(BaseExchangeApi):
             # tETHUSD -> ETH/USD
             return "{}/{}".format(bitfinex_symbol[1:-3], bitfinex_symbol[-3:])
 
-    def make_bitfinex_symbol(self, symbol):
+    def make_symbol(self, symbol):
         assert re.match(
             "[A-Z]{3,}/[A-Z]{3,}", symbol
         ), "Format of symbol should be $trade_currency/$stake_currency: {}".format(symbol)
