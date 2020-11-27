@@ -34,7 +34,7 @@ class BinanceApi(BaseExchangeApi):
 
         base_url = "https://api.binance.com"
 
-        api_path = f"/api/{api_version}/{endpoint}"
+        api_path = f"/api/v{api_version}/{endpoint}"
 
         headers = self.DEFAULT_HEADERS
 
