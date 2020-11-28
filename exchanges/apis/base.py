@@ -73,9 +73,12 @@ class BaseExchangeApi:
             logger.debug("Request Headers: %s" % headers)
 
         try:
-            response = self.session.request(
-                method, url, params=params, json=data, headers=headers, timeout=self.TIMEOUT,
-            )
+            if method == "GET":
+                response = self.session.request(method, url, params=params, headers=headers, timeout=self.TIMEOUT,)
+            else:
+                response = self.session.request(
+                    method, url, params=params, json=data, headers=headers, timeout=self.TIMEOUT,
+                )
             response.raise_for_status()
             parsed = ujson.loads(response.content)
             return parsed
@@ -84,6 +87,8 @@ class BaseExchangeApi:
         except requests.exceptions.ConnectionError:  # pragma: no cover
             raise ExchangeApiException(method, url, None, "Connection Error")
         except requests.exceptions.HTTPError:
+            print(f"Request headers: {response.request.headers}")
+            print(f"Response headers: {response.headers}")
             error_text = self.parse_error_text(response)
             raise ExchangeApiException(method, url, response.status_code, error_text)
         except ValueError as exc:
