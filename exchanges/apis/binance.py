@@ -1,25 +1,22 @@
 from .base import BaseExchangeApi, ExchangeApiException
+from functools import lru_cache
 import arrow
 import hashlib
 import hmac
 import requests
-import requests_cache
 import urllib
 
 
 class BinanceApi(BaseExchangeApi):
-    requests_cache.install_cache(cache_name="binance_requests_cache", backend="memory", expire_after=3600)
-    requests_cache.uninstall_cache()  # use .enabled context manager where we want caching, only
-
     def get_symbol(self, stake_currency, trade_currency):
         return self.make_symbol(trade_currency + "/" + stake_currency)
 
     def get_pair(self, symbol):
         return self.unmake_symbol(symbol)
 
+    @lru_cache()
     def unmake_symbol(self, symbol):
-        with requests_cache.core.enabled():
-            symbols = requests.get("https://api.binance.com/api/v3/exchangeInfo").json().get("symbols")
+        symbols = requests.get("https://api.binance.com/api/v3/exchangeInfo").json().get("symbols")
 
         our_symbol = [x for x in symbols if x["symbol"] == symbol]
         assert our_symbol, f"Trading pair {symbol} not found on Binance."
