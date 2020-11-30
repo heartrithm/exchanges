@@ -3,8 +3,11 @@ from functools import lru_cache
 import arrow
 import hashlib
 import hmac
+import logging
 import requests
 import urllib
+
+logger = logging.getLogger(__name__)
 
 
 class BinanceApi(BaseExchangeApi):
@@ -16,6 +19,7 @@ class BinanceApi(BaseExchangeApi):
 
     @lru_cache()
     def unmake_symbol(self, symbol):
+        logger.info("Calling live binance API for symbols list!")
         symbols = requests.get("https://api.binance.com/api/v3/exchangeInfo").json().get("symbols")
 
         our_symbol = [x for x in symbols if x["symbol"] == symbol]
