@@ -1,5 +1,9 @@
 from .base import BaseExchangeApi, ExchangeApiException
+import arrow
+import hashlib
+import hmac
 import requests
+import urllib
 
 
 class BinanceApi(BaseExchangeApi):
@@ -36,6 +40,20 @@ class BinanceApi(BaseExchangeApi):
 
         # Required because data for the signature must match the data that is passed in the body as json, even if empty
         data = data or {}
+
+        if authenticate:
+            if not params:
+                params = {}
+            params.update({"timestamp": round(arrow.utcnow().float_timestamp * 1000)})
+            params = urllib.parse.urlencode(params)
+            signature = (
+                hmac.new(bytes(self.secret, "latin-1"), msg=bytes(params, "latin-1"), digestmod=hashlib.sha256)
+                .hexdigest()
+                .upper()
+            )
+            params += "&signature=" + signature
+
+            headers.update({"X-MBX-APIKEY": self.key, "signature": signature})
 
         url = base_url + api_path
         try:

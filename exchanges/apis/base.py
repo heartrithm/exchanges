@@ -63,8 +63,8 @@ class BaseExchangeApi:
 
     def request(self, url, method="GET", params=None, data=None, headers=None):
         assert method in ["GET", "POST"]
-        if params:
-            assert method == "GET", "GET must be used with params"
+        if method == "GET" and not params:
+            assert not params, "GET must be used with params"
         if data:
             assert method == "POST", "POST must be used with data"
 
