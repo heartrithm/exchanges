@@ -1,3 +1,4 @@
 arrow
 requests
+requests_cache
 ujson

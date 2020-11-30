@@ -3,10 +3,13 @@ import arrow
 import hashlib
 import hmac
 import requests
+import requests_cache
 import urllib
 
 
 class BinanceApi(BaseExchangeApi):
+    requests_cache.install_cache(cache_name="binance_requests_cache", backend="sqlite", expire_after=3600)
+
     def get_symbol(self, stake_currency, trade_currency):
         return self.make_symbol(trade_currency + "/" + stake_currency)
 
