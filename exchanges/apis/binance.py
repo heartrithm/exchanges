@@ -73,9 +73,11 @@ class BinanceMarginApi(BinanceApi):
     def brequest(
         self, api_version, endpoint=None, authenticate=False, method="GET", params=None, data=None,
     ):
-        # different from bitfinex support, we support specifying any api version, because bitfinex always
+        # different from bitfinex support, we support specifying any api version, because binance always
         # seems to have some lengthy transitions.
-        assert not endpoint.startswith("/sapi"), "endpoint should not be a full path, but the url after sapi/v1/"
+        assert not endpoint.startswith(
+            ("/sapi", "sapi")
+        ), "endpoint should not be a full path, but the url after sapi/v1/"
 
         base_url = "https://api.binance.com"
         api_path = f"/sapi/v{api_version}/{endpoint}"
