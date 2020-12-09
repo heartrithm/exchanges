@@ -15,10 +15,10 @@ class BitfinexApi(BaseExchangeApi):
     def unmake_symbol(self, bitfinex_symbol):
         assert re.match("t[A-Z]{3,}[:]?[A-Z]{3,}", bitfinex_symbol), (
             "Format of bitfinex_symbol should be t$trade_currency$stake_currency or t$trade_currency:$stake_currency"
-            " (for TESTBTC, etc papertrading symbols): {}".format(bitfinex_symbol)
+            " (for pairs with >3 chars on one side): {}".format(bitfinex_symbol)
         )
-        if ":TEST" in bitfinex_symbol:
-            # tTESTBTC:TESTUSDT -> TESTBTC/TESTUSDT
+        if ":" in bitfinex_symbol:
+            # tXAUT:USD -> XAUT/USD
             pieces = bitfinex_symbol.lstrip("t").split(":")
             return "{}/{}".format(pieces[0], pieces[1])
         else:
@@ -30,7 +30,7 @@ class BitfinexApi(BaseExchangeApi):
             "[A-Z]{3,}/[A-Z]{3,}", symbol
         ), "Format of symbol should be $trade_currency/$stake_currency: {}".format(symbol)
         pieces = symbol.split("/")
-        if "TEST" in pieces[0]:  # we're in bitfinex papertrading land, put a : between symbols
+        if len(pieces[0]) > 3 or len(pieces[1]) > 3:  # these will have a : between symbols
             # TESTBTC/TESTUSDT -> tTESTBTC:TESTUSDT
             return "t{}:{}".format(pieces[0], pieces[1])
         else:
