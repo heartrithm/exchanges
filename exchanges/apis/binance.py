@@ -11,6 +11,12 @@ logger = logging.getLogger(__name__)
 
 
 class BinanceApi(BaseExchangeApi):
+    def __init__(self, *args, **kwargs):
+        logger.info("Calling live binance API for symbols list!")
+        self.symbols = requests.get("https://api.binance.com/api/v3/exchangeInfo").json().get("symbols")
+
+        super(BinanceApi, self).__init__(*args, **kwargs)
+
     def get_symbol(self, stake_currency, trade_currency):
         return self.make_symbol(trade_currency + "/" + stake_currency)
 
@@ -19,10 +25,8 @@ class BinanceApi(BaseExchangeApi):
 
     @lru_cache()
     def unmake_symbol(self, symbol):
-        logger.info("Calling live binance API for symbols list!")
-        symbols = requests.get("https://api.binance.com/api/v3/exchangeInfo").json().get("symbols")
 
-        our_symbol = [x for x in symbols if x["symbol"] == symbol]
+        our_symbol = [x for x in self.symbols if x["symbol"] == symbol]
         assert our_symbol, f"Trading pair {symbol} not found on Binance."
 
         return f'{our_symbol[0]["baseAsset"]}/{our_symbol[0]["quoteAsset"]}'
