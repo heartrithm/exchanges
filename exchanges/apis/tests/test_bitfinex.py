@@ -1,5 +1,5 @@
 from ..base import ExchangeApiException
-from ..bitfinex import BitfinexApi, BitfinexNonceException
+from ..bitfinex import BitfinexNonceException
 from exchanges import exchange_factory
 import requests_mock
 import unittest
@@ -20,6 +20,7 @@ class BitfinexTest(unittest.TestCase):
 
     def test_symbols(self):
         self.assertEqual("tETHUSD", self.client.get_symbol("USD", "ETH"))
+        self.assertEqual("BTCF0/USTF0", self.client.get_pair("tBTCF0:USTF0"))
         self.assertEqual("XAUT/USD", self.client.get_pair("tXAUT:USD"))
         self.assertEqual("ETH/USD", self.client.get_pair("tETHUSD"))
         self.assertEqual("tXAUT:USD", self.client.get_symbol("USD", "XAUT"))
