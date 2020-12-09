@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="exchanges",
-    version="1.3.1",
+    version="1.3.2",
     description="Exchange APIs",
     packages=find_packages(),
     install_requires=["arrow", "requests", "ujson"],
