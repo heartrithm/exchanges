@@ -9,6 +9,7 @@ class BinanceTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         self.client = exchange_factory("binance")("key", "secret")
         self.margin_client = exchange_factory("binance_margin")("key", "secret")
+        self.futures_client = exchange_factory("binance_futures")("key", "secret")
         super(BinanceTest, self).__init__(*args, **kwargs)
 
     def test_symbols(self):
@@ -45,3 +46,12 @@ class BinanceTest(unittest.TestCase):
             )
             result = self.margin_client.brequest(1, endpoint="margin/maxBorrowable", authenticate=True, method="POST")
             self.assertEqual(result, {"amount": "26505.468", "borrowLimit": "200000"})
+
+    def test_subclass_urls(self):
+        """ Ensure margin, futures API clients in binance call the right URLs """
+        with requests_mock.mock() as m:
+            m.get("https://api.binance.com/sapi/v1/noop", text='{"noop": true}')
+            self.margin_client.brequest(1, endpoint="noop", method="GET")
+        with requests_mock.mock() as m:
+            m.get("https://api.binance.com/fapi/v1/noop", text='{"noop": true}')
+            self.futures_client.brequest(1, endpoint="noop", method="GET")

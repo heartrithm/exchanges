@@ -11,11 +11,12 @@ logger = logging.getLogger(__name__)
 
 
 class BinanceApi(BaseExchangeApi):
+    api_prefix = "api"
+
     def __init__(self, *args, **kwargs):
         logger.info("Calling live binance API for symbols list!")
         self.symbols = requests.get("https://api.binance.com/api/v3/exchangeInfo").json().get("symbols")
-
-        super(BinanceApi, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_symbol(self, stake_currency, trade_currency):
         return self.make_symbol(trade_currency + "/" + stake_currency)
@@ -52,13 +53,14 @@ class BinanceApi(BaseExchangeApi):
     def brequest(
         self, api_version, endpoint=None, authenticate=False, method="GET", params=None, data=None,
     ):
-        # different from bitfinex support, we support specifying any api version, because bitfinex always
+        # different from bitfinex support, we support specifying any api version, because binance always
         # seems to have some lengthy transitions.
-        assert not endpoint.startswith("/api"), "endpoint should not be a full path, but the url after api/"
+        assert not endpoint.startswith(
+            (f"/{self.api_prefix}", f"{self.api_prefix}")
+        ), "endpoint should not be a full path, but the url after sapi/v1/"
 
         base_url = "https://api.binance.com"
-
-        api_path = f"/api/v{api_version}/{endpoint}"
+        api_path = f"/{self.api_prefix}/v{api_version}/{endpoint}"
 
         headers = self.DEFAULT_HEADERS
 
@@ -74,29 +76,15 @@ class BinanceApi(BaseExchangeApi):
 
 
 class BinanceMarginApi(BinanceApi):
-    def brequest(
-        self, api_version, endpoint=None, authenticate=False, method="GET", params=None, data=None,
-    ):
-        # different from bitfinex support, we support specifying any api version, because binance always
-        # seems to have some lengthy transitions.
-        assert not endpoint.startswith(
-            ("/sapi", "sapi")
-        ), "endpoint should not be a full path, but the url after sapi/v1/"
+    def __init__(self, *args, **kwargs):
+        self.api_prefix = "sapi"
+        super().__init__(*args, **kwargs)
 
-        base_url = "https://api.binance.com"
-        api_path = f"/sapi/v{api_version}/{endpoint}"
 
-        headers = self.DEFAULT_HEADERS
-
-        # Required because data for the signature must match the data that is passed in the body as json, even if empty
-        data = data or {}
-
-        if authenticate:
-            # NOTE cannot change headers or params after this
-            headers, params = self.prepare_signed_request(headers, params)
-
-        url = base_url + api_path
-        return self.request(url, method, params, data, headers)
+class BinanceFuturesApi(BinanceApi):
+    def __init__(self, *args, **kwargs):
+        self.api_prefix = "fapi"
+        super().__init__(*args, **kwargs)
 
 
 class BinanceException(ExchangeApiException):

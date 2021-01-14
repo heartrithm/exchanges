@@ -1,5 +1,5 @@
 from .apis.bitfinex import BitfinexApi
-from .apis.binance import BinanceApi, BinanceMarginApi
+from .apis.binance import BinanceApi, BinanceMarginApi, BinanceFuturesApi
 
 
 def exchange_factory(exchange):
@@ -9,3 +9,5 @@ def exchange_factory(exchange):
         return BinanceApi
     if exchange == "binance_margin":
         return BinanceMarginApi
+    if exchange == "binance_futures":
+        return BinanceFuturesApi
