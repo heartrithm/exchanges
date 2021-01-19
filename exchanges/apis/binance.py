@@ -7,7 +7,7 @@ import logging
 import requests
 import urllib
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 
 class BinanceApi(BaseExchangeApi):
