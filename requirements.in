@@ -1,3 +1,4 @@
 arrow
+loguru
 requests
 ujson

@@ -2,13 +2,10 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import hashlib
 import hmac
-import logging
 import requests
 import time
 import ujson
-
-
-logger = logging.getLogger()
+from loguru import logger
 
 
 class BaseExchangeApi:

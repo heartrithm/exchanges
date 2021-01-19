@@ -1,11 +1,9 @@
 from .base import BaseExchangeApi, ExchangeApiException
+from loguru import logger
 import base64
-import logging
 import re
 import json
 import ujson
-
-logger = logging.getLogger()
 
 
 class BitfinexApi(BaseExchangeApi):

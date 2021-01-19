@@ -1,8 +1,6 @@
 from .base import BaseExchangeApi, ExchangeApiException
-import logging
+from loguru import logger
 import re
-
-logger = logging.getLogger()
 
 
 class SFOXApi(BaseExchangeApi):

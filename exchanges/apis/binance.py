@@ -1,13 +1,11 @@
 from .base import BaseExchangeApi, ExchangeApiException
 from functools import lru_cache
+from loguru import logger
 import arrow
 import hashlib
 import hmac
-import logging
 import requests
 import urllib
-
-logger = logging.getLogger()
 
 
 class BinanceApi(BaseExchangeApi):
