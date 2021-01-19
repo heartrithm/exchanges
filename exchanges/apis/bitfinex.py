@@ -1,5 +1,4 @@
 from .base import BaseExchangeApi, ExchangeApiException
-from loguru import logger
 import base64
 import re
 import json
