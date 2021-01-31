@@ -43,7 +43,11 @@ class BaseExchangeApi:
 
         # Set up retry that will re-issue the request on connect errors and http status codes in RETRY_STATUSES
         retry = Retry(
-            total=self.RETRIES, read=self.RETRIES, connect=self.RETRIES, backoff_factor=self.RETRY_BACKOFF_FACTOR,
+            total=self.RETRIES,
+            read=self.RETRIES,
+            connect=self.RETRIES,
+            backoff_factor=self.RETRY_BACKOFF_FACTOR,
+            status_forcelist=[429, 500, 501, 502, 503, 504],
         )
 
         # Handle for all requests that start with http or https
