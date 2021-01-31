@@ -30,5 +30,5 @@ class SFOXTest(unittest.TestCase):
             m.get("https://chartdata.sfox.com/candlesticks", text='{"noop": true}')
             self.client.brequest(endpoint="candlesticks", method="GET")
         with requests_mock.mock() as m:
-            m.get("https://api.sfox.com/everything_else", text='{"noop": true}')
-            self.client.brequest(endpoint="everything_else", method="GET")
+            m.get("https://api.sfox.com/v1/everything_else", text='{"noop": true}')
+            self.client.brequest(1, endpoint="everything_else", method="GET")

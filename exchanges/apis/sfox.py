@@ -23,8 +23,6 @@ class SFOXApi(BaseExchangeApi):
     def brequest(
         self, api_version=1, endpoint=None, authenticate=False, method="GET", params=None, data=None,
     ):
-        # SFOX doesn't have versioned APIs.. :|
-
         if endpoint.startswith("candlesticks"):
             base_url = "https://chartdata.sfox.com"
             api_path = f"/{endpoint}"
