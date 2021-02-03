@@ -20,7 +20,7 @@ jobs:
       - run:
           name: run tests
           command: |
-            coverage run -m pytest
+            coverage run -m --source=exchanges pytest
 
       - store_test_results:
           path: .coverage
