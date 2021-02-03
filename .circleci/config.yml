@@ -28,9 +28,9 @@ jobs:
           path: .coverage
           destination: .coverage
       - run:
-          name: codecov upload
+          name: coveralls upload
           command: |
-            codecov -t ${CODECOV_TOKEN}
+            COVERALLS_REPO_TOKEN=${COVERALLS_TOKEN} coveralls
 
 workflows:
   main:

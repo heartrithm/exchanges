@@ -3,9 +3,8 @@
 
 [![CircleCI](https://circleci.com/gh/heartrithm/exchanges.svg?style=svg)](https://circleci.com/gh/heartrithm/exchanges)
 
-[![codecov](https://codecov.io/gh/heartrithm/exchanges/branch/master/graph/badge.svg)](https://codecov.io/gh/heartrithm/exchanges)
+[![Coverage Status](https://coveralls.io/repos/github/heartrithm/exchanges/badge.svg?branch=master)](https://coveralls.io/github/heartrithm/exchanges?branch=master)
 
- 
 Reliably talk to supported exchange APIs, with a simple raw interface. Handles the barebones communication (authentication, HTTP handling, etc.), but does not [yet?] handle abstraction of common methods. Used in production at [HeartRithm](https://www.heartrithm.com) for 3+ years.
 
 ## Features
