@@ -15,7 +15,7 @@ class BaseExchangeApi:
 
     # Settings
     TIMEOUT = (3, 10)  # Connect, Read
-    RETRIES = 2
+    RETRIES = 10
     RETRY_BACKOFF_FACTOR = 0.3
     RETRY_STATUSES = (500, 502, 503, 504)
     DEFAULT_HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
