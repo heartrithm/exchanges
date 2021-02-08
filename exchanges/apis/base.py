@@ -46,7 +46,6 @@ class BaseExchangeApi:
             connect=self.RETRIES,
             backoff_factor=self.RETRY_BACKOFF_FACTOR,
             status_forcelist=[429, 500, 501, 502, 503, 504],
-            method_whitelist=False,  # allow retry even on POST
         )
 
         # Handle for all requests that start with http or https
