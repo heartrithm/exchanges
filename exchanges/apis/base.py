@@ -17,7 +17,6 @@ class BaseExchangeApi:
     TIMEOUT = (3, 10)  # Connect, Read
     RETRIES = 10
     RETRY_BACKOFF_FACTOR = 0.3
-    RETRY_STATUSES = (500, 502, 503, 504)
     DEFAULT_HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
 
     def __init__(self, key=None, secret=None):
@@ -41,13 +40,13 @@ class BaseExchangeApi:
         if not self._session:
             self._session = requests.Session()
 
-        # Set up retry that will re-issue the request on connect errors and http status codes in RETRY_STATUSES
         retry = Retry(
             total=self.RETRIES,
             read=self.RETRIES,
             connect=self.RETRIES,
             backoff_factor=self.RETRY_BACKOFF_FACTOR,
             status_forcelist=[429, 500, 501, 502, 503, 504],
+            method_whitelist=False,  # allow retry even on POST
         )
 
         # Handle for all requests that start with http or https
