@@ -15,7 +15,7 @@ class BaseExchangeApi:
 
     # Settings
     TIMEOUT = (3, 10)  # Connect, Read
-    RETRIES = 10
+    RETRIES = 5
     RETRY_BACKOFF_FACTOR = 0.3
     DEFAULT_HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
 
@@ -68,10 +68,21 @@ class BaseExchangeApi:
 
         try:
             if method == "GET":
-                response = self.session.request(method, url, params=params, headers=headers, timeout=self.TIMEOUT,)
+                response = self.session.request(
+                    method,
+                    url,
+                    params=params,
+                    headers=headers,
+                    timeout=self.TIMEOUT,
+                )
             else:
                 response = self.session.request(
-                    method, url, params=params, json=data, headers=headers, timeout=self.TIMEOUT,
+                    method,
+                    url,
+                    params=params,
+                    json=data,
+                    headers=headers,
+                    timeout=self.TIMEOUT,
                 )
             response.raise_for_status()
             parsed = ujson.loads(response.content)
@@ -81,13 +92,16 @@ class BaseExchangeApi:
         except requests.exceptions.ConnectionError:  # pragma: no cover
             raise ExchangeApiException(method, url, None, "Connection Error")
         except requests.exceptions.HTTPError:
-            print(f"Request headers: {response.request.headers}")
-            print(f"Response headers: {response.headers}")
+            logger.debug(f"Request headers: {response.request.headers}")
+            logger.debug(f"Response headers: {response.headers}")
             error_text = self.parse_error_text(response)
             raise ExchangeApiException(method, url, response.status_code, error_text)
         except ValueError as exc:
             raise ExchangeApiException(
-                method, url, response.status_code, "Could not decode JSON response: %s" % exc,
+                method,
+                url,
+                response.status_code,
+                f"Could not decode JSON response: {exc}",
             )
 
     def parse_error_text(self, response):  # pragma: no cover
@@ -119,4 +133,4 @@ class ExchangeApiException(Exception):
         self.url = url
         self.status_code = status_code
         self.message = message
-        super().__init__("%s %s returned status code %s with message: %s" % (method, url, status_code, message))
+        super().__init__(f"{method} {url} returned status code {status_code} with message: {message}")
