@@ -4,3 +4,4 @@ requests_mock
 coverage
 coveralls
 pytest
+pytest-xdist
