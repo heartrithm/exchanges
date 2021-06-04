@@ -33,6 +33,21 @@ class BaseExchangeApi:
         # Ex BTC/USDT
         raise NotImplementedError
 
+    def get_trade_history(self):
+        """Normalized view of executed trade history across exchanges - excludes deposits/withdrawals
+        Format: [{"exchange_txn_id": str,
+                 "client_order_id": str,  # if present
+                 "time": arrow,
+                 "action": str,  # ("buy" or "sell")
+                 "stake_curr": str,
+                 "trade_curr": str,
+                 "amount": Decimal,
+                 "price": Decimal,  # price per unit of trade_curr
+                 "fees": Decimal,  # Always in stake_curr
+                 }, ...]
+        """
+        raise NotImplementedError
+
     @property
     def session(self):
         # Sessions are used to enable HTTP Keep-Alive when available
