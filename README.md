@@ -5,7 +5,7 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/heartrithm/exchanges/badge.svg?branch=master)](https://coveralls.io/github/heartrithm/exchanges?branch=master)
 
-Reliably talk to supported exchange APIs, with a simple raw interface. Handles the barebones communication (authentication, HTTP handling, etc.), but does not [yet?] handle abstraction of common methods. Used in production at [HeartRithm](https://www.heartrithm.com) for 3+ years.
+Reliably talk to supported exchange APIs, with a simple raw interface. Handles the barebones communication (authentication, HTTP handling, etc.), as well as some abstraction of common methods. Used in production at [HeartRithm](https://www.heartrithm.com) for 3+ years.
 
 ## Features
 * Retry of `GET` requests upon failure, up to 3 times, with an exponential back-off
@@ -14,6 +14,7 @@ Reliably talk to supported exchange APIs, with a simple raw interface. Handles t
 * Thorough tests with mocks
 * Proper python logging
 * High performance json parsing with [ujson](https://pypi.org/project/ujson/)
+* Methods to standardize symbol/pair names across exchanges
 
 ## Usage
 
@@ -35,6 +36,7 @@ result = client.brequest(1, "offer/cancel", authenticate=True, method="POST", da
 ## Supported Exchanges
 
 * Bitfinex, both V1 and V2 versions of the REST API
-* Binance coming soon
-
+* Binance spot API
+* SFOX
+* Coming soon: Binance futures and coinbase
 
