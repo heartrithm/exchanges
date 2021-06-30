@@ -5,7 +5,7 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/heartrithm/exchanges/badge.svg?branch=master)](https://coveralls.io/github/heartrithm/exchanges?branch=master)
 
-Reliably talk to supported exchange APIs, with a simple raw interface. Handles the barebones communication (authentication, HTTP handling, etc.), as well as some abstraction of common methods. Used in production at [HeartRithm](https://www.heartrithm.com) for 3+ years.
+Reliably talk to supported exchange APIs, with a simple raw interface. Handles the barebones communication (authentication, HTTP handling, etc.), as well as some abstraction of common methods. Used in production at [HeartRithm](https://www.heartrithm.com) since 2017.
 
 ## Features
 * Retry of `GET` requests upon failure, up to 3 times, with an exponential back-off
