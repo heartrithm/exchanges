@@ -6,11 +6,13 @@ from .apis.sfox import SFOXApi
 def exchange_factory(exchange):
     if exchange == "bitfinex":
         return BitfinexApi
-    if exchange == "binance":
+    elif exchange == "binance":
         return BinanceApi
-    if exchange == "binance_margin":
+    elif exchange == "binance_margin":
         return BinanceMarginApi
-    if exchange == "binance_futures":
+    elif exchange == "binance_futures":
         return BinanceFuturesApi
-    if exchange == "sfox":
+    elif exchange == "sfox":
         return SFOXApi
+    else:  # pragma: no cover
+        raise NotImplementedError(f"Exchange '{exchange}' not supported")
