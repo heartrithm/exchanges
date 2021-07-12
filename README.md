@@ -1,5 +1,5 @@
 # Exchange APIs
-<img width="75" align="right" src="http://www.heartrithm.com/img/logo.png">
+<img width="75" align="right" src="https://raw.githubusercontent.com/heartrithm/heart_token/main/assets/heartrithm-logo.png">
 
 [![CircleCI](https://circleci.com/gh/heartrithm/exchanges.svg?style=svg)](https://circleci.com/gh/heartrithm/exchanges)
 
