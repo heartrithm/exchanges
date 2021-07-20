@@ -14,10 +14,12 @@ class BaseExchangeApi:
     _session = key = secret = None
 
     # Settings
-    TIMEOUT = (3, 10)  # Connect, Read
-    RETRIES = 5
-    RETRY_BACKOFF_FACTOR = 0.3
+    # https://requests.readthedocs.io/en/master/user/advanced/#timeouts
+    TIMEOUT = (3.05, 30)  # first is connect, second is read
+    RETRIES = 3
+    RETRY_BACKOFF_FACTOR = 1
     DEFAULT_HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
+    HTTP_STATUSES_TO_RETRY = [408, 420, 429, 500, 501, 502, 503, 504, 520, 521, 522, 523, 524, 525]
 
     def __init__(self, key=None, secret=None):
         self.key = key
@@ -56,11 +58,12 @@ class BaseExchangeApi:
             self._session = requests.Session()
 
         retry = Retry(
-            total=self.RETRIES,
+            total=self.RETRIES + 1,
             read=self.RETRIES,
             connect=self.RETRIES,
+            status=self.RETRIES,
             backoff_factor=self.RETRY_BACKOFF_FACTOR,
-            status_forcelist=[429, 500, 501, 502, 503, 504],
+            status_forcelist=self.HTTP_STATUSES_TO_RETRY,
         )
 
         # Handle for all requests that start with http or https

@@ -1,11 +1,11 @@
 # Exchange APIs
-<img width="75" align="right" src="http://www.heartrithm.com/img/logo.png">
+<img width="75" align="right" src="https://raw.githubusercontent.com/heartrithm/heart_token/main/assets/heartrithm-logo.png">
 
 [![CircleCI](https://circleci.com/gh/heartrithm/exchanges.svg?style=svg)](https://circleci.com/gh/heartrithm/exchanges)
 
 [![Coverage Status](https://coveralls.io/repos/github/heartrithm/exchanges/badge.svg?branch=master)](https://coveralls.io/github/heartrithm/exchanges?branch=master)
 
-Reliably talk to supported exchange APIs, with a simple raw interface. Handles the barebones communication (authentication, HTTP handling, etc.), as well as some abstraction of common methods. Used in production at [HeartRithm](https://www.heartrithm.com) for 3+ years.
+Reliably talk to supported exchange APIs, with a simple raw interface. Handles the barebones communication (authentication, HTTP handling, etc.), as well as some abstraction of common methods. Used in production at [HeartRithm](https://www.heartrithm.com) since 2017.
 
 ## Features
 * Retry of `GET` requests upon failure, up to 3 times, with an exponential back-off
