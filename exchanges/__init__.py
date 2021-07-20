@@ -1,6 +1,7 @@
 from .apis.bitfinex import BitfinexApi
 from .apis.binance import BinanceApi, BinanceMarginApi, BinanceFuturesApi
 from .apis.sfox import SFOXApi
+from .apis.shrimpy import ShrimpyApi
 
 
 def exchange_factory(exchange):
@@ -14,3 +15,5 @@ def exchange_factory(exchange):
         return BinanceFuturesApi
     if exchange == "sfox":
         return SFOXApi
+    if exchange == "shrimpy":
+        return ShrimpyApi
