@@ -14,6 +14,12 @@ class ShrimpyApi(BaseExchangeApi):
     """Shrimpy doesn't have trading pairs, only positions of a currency, so the symbol methods are
     NotImplementedError"""
 
+    def __init__(self, key=None, secret=None):
+        # For shrimpy, 500 is how they fail a bad request, invalid API auth, etc.
+        # Don't retry these, as it swallows the problem
+        self.HTTP_STATUSES_TO_RETRY.remove(500)
+        super().__init__(key, secret)
+
     def get_symbol(self, stake_currency, trade_currency):
         raise NotImplementedError
 
