@@ -49,7 +49,13 @@ class BinanceApi(BaseExchangeApi):
         return headers, params
 
     def brequest(
-        self, api_version, endpoint=None, authenticate=False, method="GET", params=None, data=None,
+        self,
+        api_version,
+        endpoint=None,
+        authenticate=False,
+        method="GET",
+        params=None,
+        data=None,
     ):
         # different from bitfinex support, we support specifying any api version, because binance always
         # seems to have some lengthy transitions.
@@ -60,7 +66,7 @@ class BinanceApi(BaseExchangeApi):
         base_url = "https://api.binance.com"
         api_path = f"/{self.api_prefix}/v{api_version}/{endpoint}"
 
-        headers = self.DEFAULT_HEADERS
+        headers = self.DEFAULT_HEADERS.copy()
 
         # Required because data for the signature must match the data that is passed in the body as json, even if empty
         data = data or {}

@@ -59,7 +59,7 @@ class SFOXApi(BaseExchangeApi):
             base_url = "https://api.sfox.com"
             api_path = f"/v{api_version}/{endpoint}"
 
-        headers = self.DEFAULT_HEADERS
+        headers = self.DEFAULT_HEADERS.copy()
 
         if authenticate:
             headers.update({"Authorization": f"Bearer {self.key}"})

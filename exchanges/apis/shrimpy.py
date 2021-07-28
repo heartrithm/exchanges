@@ -50,7 +50,7 @@ class ShrimpyApi(BaseExchangeApi):
         api_path = f"/v{api_version}/{endpoint}"
         url = base_url + api_path
 
-        headers = self.DEFAULT_HEADERS
+        headers = self.DEFAULT_HEADERS.copy()
 
         if authenticate:
             # proper representation for empty params or data, so it can be signed:

@@ -38,7 +38,13 @@ class BitfinexApi(BaseExchangeApi):
             return "t{}{}".format(pieces[0], pieces[1])
 
     def brequest(
-        self, api_version, endpoint=None, authenticate=False, method="GET", params=None, data=None,
+        self,
+        api_version,
+        endpoint=None,
+        authenticate=False,
+        method="GET",
+        params=None,
+        data=None,
     ):
         # Inspired by https://raw.githubusercontent.com/faberquisque/pyfinex/master/pyfinex/api.py
         # Handle requests for both v1 and v2 versions of the API with one wrapper
@@ -54,7 +60,7 @@ class BitfinexApi(BaseExchangeApi):
 
         api_path = "/v%s/%s" % (api_version, endpoint)
 
-        headers = self.DEFAULT_HEADERS
+        headers = self.DEFAULT_HEADERS.copy()
 
         # Required because data for the signature must match the data that is passed in the body as json, even if empty
         data = data or {}
