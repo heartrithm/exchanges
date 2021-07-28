@@ -3,12 +3,14 @@ import hashlib
 import hmac
 import urllib
 
-import arrow
+import time
 
 from .base import BaseExchangeApi, ExchangeApiException
 
 
 class ShrimpyApi(BaseExchangeApi):
+
+    accounts_cache = None
     """Shrimpy doesn't have trading pairs, only positions of a currency, so the symbol methods are
     NotImplementedError"""
 
@@ -38,7 +40,7 @@ class ShrimpyApi(BaseExchangeApi):
         data=None,
     ):
 
-        base_url = "https://dev-api.shrimpy.io"
+        base_url = "https://api.shrimpy.io"
         api_path = f"/v{api_version}/{endpoint}"
         url = base_url + api_path
 
@@ -51,22 +53,26 @@ class ShrimpyApi(BaseExchangeApi):
             if params:
                 params = urllib.parse.urlencode(params)
 
-            nonce = str(round(arrow.utcnow().float_timestamp * 1000))
-            decoded_secret = base64.b64decode(self.secret)
+            nonce = str(int(time.time() * 1000))
+            message = (api_path + method + nonce + data).encode("ascii")
+            hmac_key = base64.b64decode(self.secret)
 
-            hash_str = api_path + params + method + nonce + data
-            signature = (
-                hmac.new(decoded_secret, msg=bytes(hash_str, "latin-1"), digestmod=hashlib.sha256).hexdigest().upper()
-            )
+            signature = hmac.new(hmac_key, message, hashlib.sha256)
+            signature_b64 = base64.b64encode(signature.digest()).decode("utf-8")
             headers.update(
-                {
-                    "DEV-SHRIMPY-API-KEY": self.key,
-                    "DEV-SHRIMPY-API-NONCE": nonce,
-                    "DEV-SHRIMPY-API-SIGNATURE": base64.b64encode(bytes(signature, "latin-1")),
-                }
+                {"SHRIMPY-API-KEY": self.key, "SHRIMPY-API-NONCE": nonce, "SHRIMPY-API-SIGNATURE": signature_b64}
             )
 
         return self.request(url, method, params, data or {}, headers)
+
+    def get_account_id_for_exchange(self, exchange):
+        if self.accounts_cache is None:
+            self.accounts_cache = self.brequest(1, "accounts", authenticate=True)
+
+        for account in self.accounts_cache:
+            if exchange == account["exchange"]:
+                return account["id"]
+        raise NotImplementedError(f"No shrimpy account found for {exchange}")
 
 
 class ShrimpyException(ExchangeApiException):
