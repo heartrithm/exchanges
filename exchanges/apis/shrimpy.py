@@ -10,15 +10,16 @@ from .base import BaseExchangeApi, ExchangeApiException
 
 class ShrimpyApi(BaseExchangeApi):
 
-    accounts_cache = None
     """Shrimpy doesn't have trading pairs, only positions of a currency, so the symbol methods are
     NotImplementedError"""
 
     def __init__(self, key=None, secret=None):
+        super().__init__(key, secret)
+
         # For shrimpy, 500 is how they fail a bad request, invalid API auth, etc.
         # Don't retry these, as it swallows the problem
-        self.HTTP_STATUSES_TO_RETRY.remove(500)
-        super().__init__(key, secret)
+        if 500 in self.HTTP_STATUSES_TO_RETRY:
+            self.HTTP_STATUSES_TO_RETRY.remove(500)
 
     def get_symbol(self, stake_currency, trade_currency):
         raise NotImplementedError
@@ -70,15 +71,6 @@ class ShrimpyApi(BaseExchangeApi):
             )
 
         return self.request(url, method, params, data or {}, headers)
-
-    def get_account_id_for_exchange(self, exchange):
-        if self.accounts_cache is None:
-            self.accounts_cache = self.brequest(1, "accounts", authenticate=True)
-
-        for account in self.accounts_cache:
-            if exchange == account["exchange"]:
-                return account["id"]
-        raise NotImplementedError(f"No shrimpy account found for {exchange}")
 
 
 class ShrimpyException(ExchangeApiException):
