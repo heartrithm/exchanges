@@ -87,7 +87,11 @@ class BaseExchangeApi:
         # If a string is passed in for data, assume it is already json as a string,
         # otherwise, assume it's a complex type and we pass it as json so it gets converted
         if data and type(data) != str:
+            json = None
             data = ujson.dumps(data)
+        else:
+            json = data
+            data = None
 
         try:
 
@@ -97,6 +101,7 @@ class BaseExchangeApi:
                 params=params,
                 headers=headers,
                 data=data,
+                json=json,
                 timeout=self.TIMEOUT,
                 auth=self.auth_provider,
             )
