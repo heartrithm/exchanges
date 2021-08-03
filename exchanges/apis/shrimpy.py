@@ -1,17 +1,17 @@
+from .base import BaseExchangeApi, ExchangeApiException
+from requests.auth import AuthBase
 import base64
 import hashlib
 import hmac
-import urllib
-
 import time
-
-from .base import BaseExchangeApi, ExchangeApiException
 
 
 class ShrimpyApi(BaseExchangeApi):
 
     """Shrimpy doesn't have trading pairs, only positions of a currency, so the symbol methods are
     NotImplementedError"""
+
+    auth_provider = None
 
     def __init__(self, key=None, secret=None):
         super().__init__(key, secret)
@@ -34,7 +34,7 @@ class ShrimpyApi(BaseExchangeApi):
         raise NotImplementedError
 
     def get_trade_history(self):
-        """ Normalized view of trade history excluding deposits/withdrawals"""
+        """Normalized view of trade history excluding deposits/withdrawals"""
         raise NotImplementedError
 
     def brequest(
@@ -54,24 +54,38 @@ class ShrimpyApi(BaseExchangeApi):
         headers = self.DEFAULT_HEADERS.copy()
 
         if authenticate:
-            # proper representation for empty params or data, so it can be signed:
-            data = data or ""
-            params = params or ""
-            if params:
-                params = urllib.parse.urlencode(params)
+            self.auth_provider = ShrimpyAuthProvider(self.key, self.secret)
+        else:
+            self.auth_provider = None
 
-            nonce = str(int(time.time() * 1000))
-            message = (api_path + method + nonce + data).encode("ascii")
-            hmac_key = base64.b64decode(self.secret)
-
-            signature = hmac.new(hmac_key, message, hashlib.sha256)
-            signature_b64 = base64.b64encode(signature.digest()).decode("utf-8")
-            headers.update(
-                {"SHRIMPY-API-KEY": self.key, "SHRIMPY-API-NONCE": nonce, "SHRIMPY-API-SIGNATURE": signature_b64}
-            )
-
-        return self.request(url, method, params, data or {}, headers)
+        return self.request(url, method, params, data, headers)
 
 
 class ShrimpyException(ExchangeApiException):
     pass
+
+
+class ShrimpyAuthProvider(AuthBase):
+    def __init__(self, api_key, secret_key):
+        self.api_key = api_key
+        self.secret_key = secret_key
+
+    def __call__(self, request):
+        nonce = str(int(time.time() * 1000))
+
+        message = "".join([request.path_url, request.method, str(nonce), (request.body or "")])
+        headers = self.get_auth_headers(nonce, message, self.api_key, self.secret_key)
+        request.headers.update(headers)
+        return request
+
+    def get_auth_headers(self, timestamp, message, api_key, secret_key):
+        message = message.encode("ascii")
+        hmac_key = base64.b64decode(secret_key)
+        signature = hmac.new(hmac_key, message, hashlib.sha256)
+        signature_b64 = base64.b64encode(signature.digest()).decode("utf-8")
+
+        return {
+            "SHRIMPY-API-KEY": api_key,
+            "SHRIMPY-API-NONCE": timestamp,
+            "SHRIMPY-API-SIGNATURE": signature_b64,
+        }

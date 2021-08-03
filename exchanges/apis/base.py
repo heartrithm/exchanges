@@ -11,7 +11,7 @@ from loguru import logger
 class BaseExchangeApi:
 
     # Internal state
-    _session = key = secret = None
+    _session = key = secret = auth_provider = None
 
     # Settings
     # https://requests.readthedocs.io/en/master/user/advanced/#timeouts
@@ -84,24 +84,23 @@ class BaseExchangeApi:
         if headers:
             logger.debug("Request Headers: %s" % headers)
 
+        # If a string is passed in for data, assume it is already json as a string,
+        # otherwise, assume it's a complex type and we pass it as json so it gets converted
+        if data and type(data) != str:
+            data = ujson.dumps(data)
+
         try:
-            if method == "GET":
-                response = self.session.request(
-                    method,
-                    url,
-                    params=params,
-                    headers=headers,
-                    timeout=self.TIMEOUT,
-                )
-            else:
-                response = self.session.request(
-                    method,
-                    url,
-                    params=params,
-                    json=data,
-                    headers=headers,
-                    timeout=self.TIMEOUT,
-                )
+
+            response = self.session.request(
+                method,
+                url,
+                params=params,
+                headers=headers,
+                data=data,
+                timeout=self.TIMEOUT,
+                auth=self.auth_provider,
+            )
+
             response.raise_for_status()
             parsed = ujson.loads(response.content)
             return parsed
