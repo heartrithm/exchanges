@@ -1,5 +1,5 @@
 from .base import BaseExchangeApi, ExchangeApiException
-from functools import lru_cache
+from cachetools import cached, TTLCache
 from loguru import logger
 import arrow
 import hashlib
@@ -12,9 +12,12 @@ class BinanceApi(BaseExchangeApi):
     api_prefix = "api"
 
     def __init__(self, *args, **kwargs):
-        logger.info("Calling live binance API for symbols list!")
-        self.symbols = requests.get("https://api.binance.com/api/v3/exchangeInfo").json().get("symbols")
         super().__init__(*args, **kwargs)
+
+    @cached(cache=TTLCache(maxsize=32, ttl=300))
+    def pull_symbols(self):
+        logger.info("Calling live binance API for symbols list")
+        return requests.get("https://api.binance.com/api/v3/exchangeInfo").json().get("symbols")
 
     def get_symbol(self, stake_currency, trade_currency):
         return self.make_symbol(trade_currency + "/" + stake_currency)
@@ -22,8 +25,9 @@ class BinanceApi(BaseExchangeApi):
     def get_pair(self, symbol):
         return self.unmake_symbol(symbol)
 
-    @lru_cache()
+    @cached(cache={})
     def unmake_symbol(self, symbol):
+        self.symbols = self.pull_symbols()
 
         our_symbol = [x for x in self.symbols if x["symbol"] == symbol]
         assert our_symbol, f"Trading pair {symbol} not found on Binance."
