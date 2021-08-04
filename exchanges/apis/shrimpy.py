@@ -22,16 +22,16 @@ class ShrimpyApi(BaseExchangeApi):
             self.HTTP_STATUSES_TO_RETRY.remove(500)
 
     def get_symbol(self, stake_currency, trade_currency):
-        raise NotImplementedError
+        return "{}:{}".format(stake_currency, trade_currency)
 
     def get_pair(self, symbol):
-        raise NotImplementedError
+        return symbol
 
     def unmake_symbol(self, symbol):
-        raise NotImplementedError
+        return symbol
 
     def make_symbol(self, symbol):
-        raise NotImplementedError
+        return symbol
 
     def get_trade_history(self):
         """Normalized view of trade history excluding deposits/withdrawals"""
