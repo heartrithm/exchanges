@@ -1,6 +1,5 @@
 import os
 
-from ..base import ExchangeApiException
 from exchanges import exchange_factory
 
 import unittest
@@ -20,4 +19,4 @@ class LiveAPITest(unittest.TestCase):
             unittest.skip("No API keys provided; skipping live auth checks")
             return True
 
-        result = self.bitfinex_client.brequest(2, endpoint="auth/r/wallets", authenticate=True, method="POST")
+        self.bitfinex_client.brequest(2, endpoint="auth/r/wallets", authenticate=True, method="POST")

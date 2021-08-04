@@ -2,9 +2,9 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import hashlib
 import hmac
+import json
 import requests
 import time
-import ujson
 from loguru import logger
 
 
@@ -87,11 +87,12 @@ class BaseExchangeApi:
 
         # If a string is passed in for data, assume it is already json as a string,
         # otherwise, assume it's a complex type and we pass it as json so it gets converted
+        # Note: ujson strips spaces and breaks bitfinex
         if data and type(data) != str:
-            json = None
-            data = ujson.dumps(data)
+            json_data = None
+            data = json.dumps(data)
         else:
-            json = data
+            json_data = data
             data = None
 
         try:
@@ -102,13 +103,13 @@ class BaseExchangeApi:
                 params=params,
                 headers=headers,
                 data=data,
-                json=json,
+                json=json_data,
                 timeout=self.TIMEOUT,
                 auth=self.auth_provider,
             )
 
             response.raise_for_status()
-            parsed = ujson.loads(response.content)
+            parsed = json.loads(response.content)
             return parsed
         except requests.exceptions.Timeout:  # pragma: no cover
             raise ExchangeApiException(method, url, None, "Connection Timeout")
