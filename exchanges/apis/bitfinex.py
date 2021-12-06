@@ -37,15 +37,7 @@ class BitfinexApi(BaseExchangeApi):
             # ETH/USD -> tETHUSD
             return "t{}{}".format(pieces[0], pieces[1])
 
-    def brequest(
-        self,
-        api_version,
-        endpoint=None,
-        authenticate=False,
-        method="GET",
-        params=None,
-        data=None,
-    ):
+    def brequest(self, api_version, endpoint=None, authenticate=False, method="GET", params=None, data=None, retry=0):
         # Inspired by https://raw.githubusercontent.com/faberquisque/pyfinex/master/pyfinex/api.py
         # Handle requests for both v1 and v2 versions of the API with one wrapper
         # Why both, you ask? v2 has better data, but does not support write requests (only in v2 websockets API)
@@ -66,7 +58,7 @@ class BitfinexApi(BaseExchangeApi):
         data = data or {}
 
         if authenticate:
-            nonce = self.nonce()
+            nonce = self.nonce(retry)
             payload = self.generate_payload(api_version, api_path, nonce, data)
             headers.update(self.auth_headers(self.key, self.secret, api_version, nonce, payload))
 
@@ -75,12 +67,14 @@ class BitfinexApi(BaseExchangeApi):
             return self.request(url, method, params, data, headers)
         except ExchangeApiException as exc:
             if exc.message in ["nonce: small", "Nonce is too small."]:
-                raise BitfinexNonceException(method, url, exc.status_code, exc.message)
+                if retry > 3:
+                    raise BitfinexNonceException(method, url, exc.status_code, exc.message)
+                self.brequest(api_version, endpoint, authenticate, method, params, data, retry + 1)
             else:
                 raise
 
     def generate_payload(self, api_version, api_path, nonce, data):
-        """ Return the header's payload based on version """
+        """Return the header's payload based on version"""
         assert api_version in [1, 2]
         if api_version == 1:
             payload_object = {}
@@ -96,7 +90,7 @@ class BitfinexApi(BaseExchangeApi):
         return payload
 
     def auth_headers(self, key, secret, api_version, nonce, payload):
-        """ Return the request headers based on version """
+        """Return the request headers based on version"""
         assert api_version in [1, 2]
         headers = {}
         if api_version == 1:
