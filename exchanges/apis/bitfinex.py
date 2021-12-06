@@ -51,7 +51,6 @@ class BitfinexApi(BaseExchangeApi):
             base_url = "https://api-pub.bitfinex.com"
 
         api_path = "/v%s/%s" % (api_version, endpoint)
-
         headers = self.DEFAULT_HEADERS.copy()
 
         # Required because data for the signature must match the data that is passed in the body as json, even if empty
