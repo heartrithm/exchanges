@@ -37,7 +37,9 @@ class BitfinexApi(BaseExchangeApi):
             # ETH/USD -> tETHUSD
             return "t{}{}".format(pieces[0], pieces[1])
 
-    def brequest(self, api_version, endpoint=None, authenticate=False, method="GET", params=None, data=None, retry=0):
+    def brequest(
+        self, api_version, endpoint=None, authenticate=False, method="GET", params=None, data=None, nonce_increment=0
+    ):
         # Inspired by https://raw.githubusercontent.com/faberquisque/pyfinex/master/pyfinex/api.py
         # Handle requests for both v1 and v2 versions of the API with one wrapper
         # Why both, you ask? v2 has better data, but does not support write requests (only in v2 websockets API)
@@ -58,7 +60,7 @@ class BitfinexApi(BaseExchangeApi):
 
         if authenticate:
             # Use the retry value to increment the nonce if needed
-            nonce = self.nonce(retry)
+            nonce = self.nonce(nonce_increment)
             payload = self.generate_payload(api_version, api_path, nonce, data)
             headers.update(self.auth_headers(self.key, self.secret, api_version, nonce, payload))
 
@@ -67,9 +69,9 @@ class BitfinexApi(BaseExchangeApi):
             return self.request(url, method, params, data, headers)
         except ExchangeApiException as exc:
             if exc.message in ["nonce: small", "Nonce is too small."]:
-                if retry > 3:
+                if nonce_increment > 3:
                     raise BitfinexNonceException(method, url, exc.status_code, exc.message)
-                self.brequest(api_version, endpoint, authenticate, method, params, data, retry + 1)
+                return self.brequest(api_version, endpoint, authenticate, method, params, data, nonce_increment + 1)
             else:
                 raise
 
