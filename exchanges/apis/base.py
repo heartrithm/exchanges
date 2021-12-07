@@ -134,6 +134,7 @@ class BaseExchangeApi:
 
     def nonce(self, increment=0):
         # Slightly larger than the default so we can continue using the same one for all APIs
+        # Increment prevents nonce too small errors from being raised
         return str(int(round(time.time() * 10000000)) + increment)
 
     def sign(self, secret, message):

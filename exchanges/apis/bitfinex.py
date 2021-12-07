@@ -57,6 +57,7 @@ class BitfinexApi(BaseExchangeApi):
         data = data or {}
 
         if authenticate:
+            # Use the retry value to increment the nonce if needed
             nonce = self.nonce(retry)
             payload = self.generate_payload(api_version, api_path, nonce, data)
             headers.update(self.auth_headers(self.key, self.secret, api_version, nonce, payload))
