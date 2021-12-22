@@ -17,7 +17,7 @@ class BaseExchangeApi:
     # https://requests.readthedocs.io/en/master/user/advanced/#timeouts
     TIMEOUT = (3.05, 30)  # first is connect, second is read
     RETRIES = 3
-    RETRY_BACKOFF_FACTOR = 1
+    RETRY_BACKOFF_FACTOR = 0.5
     DEFAULT_HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
     # Don't auto retry 429, that means we're going to fast
     HTTP_STATUSES_TO_RETRY = [408, 420, 500, 501, 502, 503, 504, 520, 521, 522, 523, 524, 525]
