@@ -59,10 +59,14 @@ class BaseExchangeApi:
             self._session = requests.Session()
 
         def log_retry_response(response, *args, **kwargs):
+            elapsed = response.elapsed.total_seconds()
             if response.status_code in self.HTTP_STATUSES_TO_RETRY:
                 logger.warning(
-                    f"Retrying {response.request.url} ({response.status_code}: {response.reason}): {response.text}"
+                    f"Retrying {response.request.url} ({response.status_code}: "
+                    + f"{response.reason} after {elapsed:.2f}s): {response.text}"
                 )
+            else:
+                logger.debug(f"Request to {response.request.url} took {elapsed:.2f}s")
 
         self._session.hooks["response"] = [log_retry_response]
 
