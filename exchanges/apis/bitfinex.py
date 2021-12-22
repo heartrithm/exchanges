@@ -3,6 +3,10 @@ import base64
 import re
 import json
 import ujson
+import time
+
+from loguru import logger
+from ratelimiter import RateLimiter
 
 
 class BitfinexApi(BaseExchangeApi):
@@ -71,8 +75,17 @@ class BitfinexApi(BaseExchangeApi):
             headers.update(self.auth_headers(self.key, self.secret, api_version, nonce, payload))
 
         url = base_url + api_path
+
+        # Limit calls to bitfinex to one per second to make sure nonces don't get confused
+        limiter = RateLimiter(
+            max_calls=1,
+            period=1,
+            callback=lambda until: logger.info(f"Bitfinex call rate limited, sleeping for {until - time.time():.1f}s"),
+        )
+
         try:
-            return self.request(url, method, params, data, headers)
+            with limiter:
+                return self.request(url, method, params, data, headers)
         except ExchangeApiException as exc:
             if exc.message in ["nonce: small", "Nonce is too small."]:
                 raise BitfinexNonceException(method, url, exc.status_code, exc.message)
@@ -80,7 +93,7 @@ class BitfinexApi(BaseExchangeApi):
                 raise
 
     def generate_payload(self, api_version, api_path, nonce, data):
-        """ Return the header's payload based on version """
+        """Return the header's payload based on version"""
         assert api_version in [1, 2]
         if api_version == 1:
             payload_object = {}
@@ -96,7 +109,7 @@ class BitfinexApi(BaseExchangeApi):
         return payload
 
     def auth_headers(self, key, secret, api_version, nonce, payload):
-        """ Return the request headers based on version """
+        """Return the request headers based on version"""
         assert api_version in [1, 2]
         headers = {}
         if api_version == 1:
