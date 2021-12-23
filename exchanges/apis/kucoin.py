@@ -53,5 +53,14 @@ if __name__ == "__main__":
     # Total amount borrowed in the past 2 minutes is $500k
     params = {"currency": "USDT"}
     a = kucoin.brequest(1, "margin/trade/last", params=params)
-    sizes = [int(i["size"]) for i in a["data"]]
-    print("${:0,.0f}".format(reduce(lambda a, b: a + b, sizes)))
+    print(a)
+    sizes = [float(i["size"]) for i in a["data"]]
+
+    size_value = reduce(lambda a, b: a + b, sizes)
+    print("${:0,.0f}".format(size_value))
+
+    # Weighted average of yield
+    yields = [float(i["size"]) * float(i["dailyIntRate"]) for i in a["data"]]
+    total_yield = reduce(lambda a, b: a + b, yields)
+
+    print(float(1 + (total_yield / size_value)) ** 365)
