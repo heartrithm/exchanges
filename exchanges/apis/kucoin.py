@@ -1,5 +1,4 @@
-from base import BaseExchangeApi
-from functools import reduce
+from .base import BaseExchangeApi, ExchangeApiException
 
 
 class KucoinApi(BaseExchangeApi):
@@ -35,32 +34,5 @@ class KucoinApi(BaseExchangeApi):
         return self.request(url, method, params, data, headers)
 
 
-if __name__ == "__main__":
-    kucoin = KucoinApi()
-    # Running the following gives a total sum of $88m
-    sum = 0
-    for currency in ["USDT"]:  # I initially added more stablecoins
-        params = {"currency": currency}
-        a = kucoin.brequest(1, "margin/market", params=params)
-        sizes = [int(i["size"]) for i in a["data"]]
-        if not sizes:
-            continue
-        value = reduce(lambda a, b: a + b, sizes)
-        sum += value
-
-    print("${:0,.0f}".format(sum))
-
-    # Total amount borrowed in the past 2 minutes is $500k
-    params = {"currency": "USDT"}
-    a = kucoin.brequest(1, "margin/trade/last", params=params)
-    print(a)
-    sizes = [float(i["size"]) for i in a["data"]]
-
-    size_value = reduce(lambda a, b: a + b, sizes)
-    print("${:0,.0f}".format(size_value))
-
-    # Weighted average of yield
-    yields = [float(i["size"]) * float(i["dailyIntRate"]) for i in a["data"]]
-    total_yield = reduce(lambda a, b: a + b, yields)
-
-    print(float(1 + (total_yield / size_value)) ** 365)
+class KucoinException(ExchangeApiException):
+    pass
