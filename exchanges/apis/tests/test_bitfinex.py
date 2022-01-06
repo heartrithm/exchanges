@@ -1,8 +1,11 @@
+import unittest
+
+import requests_mock
+
+from exchanges import exchange_factory
+
 from ..base import ExchangeApiException
 from ..bitfinex import BitfinexNonceException
-from exchanges import exchange_factory
-import requests_mock
-import unittest
 
 
 class BitfinexTest(unittest.TestCase):
@@ -14,7 +17,11 @@ class BitfinexTest(unittest.TestCase):
         with requests_mock.mock() as m:
             m.post("https://api.bitfinex.com/v1/offer/cancel", text='{"id": 124124}')
             result = self.client.brequest(
-                1, "offer/cancel", authenticate=True, method="POST", data={"offer_id": 124124},
+                1,
+                "offer/cancel",
+                authenticate=True,
+                method="POST",
+                data={"offer_id": 124124},
             )
             self.assertEqual(result["id"], 124124)
 
@@ -36,7 +43,8 @@ class BitfinexTest(unittest.TestCase):
     def test_auth_v2(self):
         with requests_mock.mock() as m:
             m.post(
-                "https://api.bitfinex.com/v2/auth/r/wallets", text='[["funding", "USD", 24570.03334688, 0, 500.143]]',
+                "https://api.bitfinex.com/v2/auth/r/wallets",
+                text='[["funding", "USD", 24570.03334688, 0, 500.143]]',
             )
             result = self.client.brequest(2, endpoint="auth/r/wallets", authenticate=True, method="POST")
             self.assertEqual(result, [["funding", "USD", 24570.03334688, 0, 500.143]])
@@ -46,19 +54,25 @@ class BitfinexTest(unittest.TestCase):
         with requests_mock.mock() as m:
             with self.assertRaises(ExchangeApiException):
                 m.get(
-                    "https://api.bitfinex.com/v1/error", text='{"message": "Invalid Request"}', status_code=400,
+                    "https://api.bitfinex.com/v1/error",
+                    text='{"message": "Invalid Request"}',
+                    status_code=400,
                 )
                 self.client.brequest(1, "error")
 
             with self.assertRaises(ExchangeApiException):
                 m.get(
-                    "https://api-pub.bitfinex.com/v2/error", text='["error", 2141, "Invalid Request"]', status_code=400,
+                    "https://api-pub.bitfinex.com/v2/error",
+                    text='["error", 2141, "Invalid Request"]',
+                    status_code=400,
                 )
                 self.client.brequest(2, "error")
 
             with self.assertRaises(ExchangeApiException):
                 m.get(
-                    "https://api.bitfinex.com/v1/badjson", text="{badjson", status_code=400,
+                    "https://api.bitfinex.com/v1/badjson",
+                    text="{badjson",
+                    status_code=400,
                 )
                 self.client.brequest(1, "badjson")
 
@@ -73,19 +87,25 @@ class BitfinexTest(unittest.TestCase):
 
             with self.assertRaises(BitfinexNonceException):
                 m.get(
-                    "https://api.bitfinex.com/v1/nonce", text='{"message":"Nonce is too small."}', status_code=400,
+                    "https://api.bitfinex.com/v1/nonce",
+                    text='{"message":"Nonce is too small."}',
+                    status_code=400,
                 )
                 self.client.brequest(1, "nonce")
 
             with self.assertRaises(BitfinexNonceException):
                 m.get(
-                    "https://api-pub.bitfinex.com/v2/nonce", text='["error",10114,"nonce: small"]', status_code=500,
+                    "https://api-pub.bitfinex.com/v2/nonce",
+                    text='["error",10114,"nonce: small"]',
+                    status_code=500,
                 )
                 self.client.brequest(2, "nonce")
 
             with self.assertRaises(ExchangeApiException):
                 m.get(
-                    "https://api-pub.bitfinex.com/v2/newformat", text='{"newformat": true}', status_code=500,
+                    "https://api-pub.bitfinex.com/v2/newformat",
+                    text='{"newformat": true}',
+                    status_code=500,
                 )
                 self.client.brequest(2, "newformat")
 

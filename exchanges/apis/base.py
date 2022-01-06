@@ -1,11 +1,12 @@
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 import hashlib
 import hmac
 import json
-import requests
 import time
+
 from loguru import logger
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+import requests
 
 
 class BaseExchangeApi:

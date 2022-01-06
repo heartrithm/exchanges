@@ -10,3 +10,10 @@ exclude = '''
   | \.venv
 )/
 '''
+
+[tool.isort]
+profile = "black"
+use_parentheses = true
+line_length = 120
+combine_as_imports = true
+from_first = true # put the 'from' imports first

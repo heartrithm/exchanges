@@ -1,8 +1,10 @@
-from ..base import ExchangeApiException
-from exchanges import exchange_factory
+import unittest
 
 import requests_mock
-import unittest
+
+from exchanges import exchange_factory
+
+from ..base import ExchangeApiException
 
 
 class BinanceTest(unittest.TestCase):
@@ -42,7 +44,8 @@ class BinanceTest(unittest.TestCase):
     def test_auth_margin_api(self):
         with requests_mock.mock() as m:
             m.post(
-                requests_mock.ANY, text='{"amount": "26505.468", "borrowLimit": "200000"}',
+                requests_mock.ANY,
+                text='{"amount": "26505.468", "borrowLimit": "200000"}',
             )
             result = self.margin_client.brequest(1, endpoint="margin/maxBorrowable", authenticate=True, method="POST")
             self.assertEqual(result, {"amount": "26505.468", "borrowLimit": "200000"})

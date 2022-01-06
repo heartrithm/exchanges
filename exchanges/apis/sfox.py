@@ -1,7 +1,9 @@
-from .base import BaseExchangeApi, ExchangeApiException
-import arrow
-import re
 from decimal import Decimal as D
+import re
+
+import arrow
+
+from .base import BaseExchangeApi, ExchangeApiException
 
 
 class SFOXApi(BaseExchangeApi):

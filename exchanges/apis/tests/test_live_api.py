@@ -1,8 +1,7 @@
 import os
+import unittest
 
 from exchanges import exchange_factory
-
-import unittest
 
 
 class LiveAPITest(unittest.TestCase):
