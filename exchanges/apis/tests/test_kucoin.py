@@ -1,8 +1,10 @@
-from ..base import ExchangeApiException
-from exchanges import exchange_factory
+import unittest
 
 import requests_mock
-import unittest
+
+from exchanges import exchange_factory
+
+from ..base import ExchangeApiException
 
 
 class KucoinTest(unittest.TestCase):

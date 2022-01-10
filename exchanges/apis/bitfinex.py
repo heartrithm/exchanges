@@ -1,12 +1,13 @@
-from .base import BaseExchangeApi, ExchangeApiException
 import base64
-import re
 import json
-import ujson
+import re
 import time
 
 from loguru import logger
 from ratelimiter import RateLimiter
+import ujson
+
+from .base import BaseExchangeApi, ExchangeApiException
 
 
 class BitfinexApi(BaseExchangeApi):

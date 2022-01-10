@@ -1,6 +1,8 @@
-from ..base import BaseExchangeApi, ExchangeApiException
-import requests_mock
 import unittest
+
+import requests_mock
+
+from ..base import BaseExchangeApi, ExchangeApiException
 
 
 class BaseTest(unittest.TestCase):

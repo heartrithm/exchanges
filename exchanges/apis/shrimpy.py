@@ -1,9 +1,11 @@
-from .base import BaseExchangeApi, ExchangeApiException
-from requests.auth import AuthBase
 import base64
 import hashlib
 import hmac
 import time
+
+from requests.auth import AuthBase
+
+from .base import BaseExchangeApi, ExchangeApiException
 
 
 class ShrimpyApi(BaseExchangeApi):

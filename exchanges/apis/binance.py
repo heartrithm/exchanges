@@ -1,11 +1,13 @@
-from .base import BaseExchangeApi, ExchangeApiException
-from cachetools import cached, TTLCache
-from loguru import logger
-import arrow
 import hashlib
 import hmac
-import requests
 import urllib
+
+from cachetools import TTLCache, cached
+from loguru import logger
+import arrow
+import requests
+
+from .base import BaseExchangeApi, ExchangeApiException
 
 
 class BinanceApi(BaseExchangeApi):
