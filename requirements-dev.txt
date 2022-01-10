@@ -2,5 +2,6 @@
 -r requirements-test.txt
 black
 flake8
+isort
 pre-commit
 pip-tools
