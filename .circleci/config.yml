@@ -36,4 +36,3 @@ workflows:
   main:
     jobs:
       - build-and-test
-
