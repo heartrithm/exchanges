@@ -1,6 +1,6 @@
-from .apis.kucoin import KucoinApi
+from .apis.binance import BinanceApi, BinanceFuturesApi, BinanceMarginApi
 from .apis.bitfinex import BitfinexApi
-from .apis.binance import BinanceApi, BinanceMarginApi, BinanceFuturesApi
+from .apis.kucoin import KucoinApi
 from .apis.sfox import SFOXApi
 from .apis.shrimpy import ShrimpyApi
 
@@ -14,11 +14,11 @@ def exchange_factory(exchange):
         return BinanceMarginApi
     elif exchange == "binance_futures":
         return BinanceFuturesApi
+    elif exchange == "kucoin":
+        return KucoinApi
     elif exchange == "sfox":
         return SFOXApi
     elif exchange == "shrimpy":
         return ShrimpyApi
-    elif exchange == "kucoin":
-        return KucoinApi
     else:  # pragma: no cover
         raise NotImplementedError(f"Exchange '{exchange}' not supported")
