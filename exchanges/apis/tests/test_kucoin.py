@@ -7,10 +7,10 @@ from exchanges import exchange_factory
 from ..base import ExchangeApiException
 
 
-class KucoinTest(unittest.TestCase):
+class KuCoinTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         self.client = exchange_factory("kucoin")("key", "secret")
-        super(KucoinTest, self).__init__(*args, **kwargs)
+        super(KuCoinTest, self).__init__(*args, **kwargs)
 
     def test_kucoin_status(self):
         # One real call without a mock
@@ -19,7 +19,7 @@ class KucoinTest(unittest.TestCase):
                 self.client.brequest(1, "status"), {"code": "200000", "data": {"msg": "", "status": "open"}}
             )
         except ExchangeApiException:
-            print("Error fetching Kucoin platform status. Network down?")
+            print("Error fetching KuCoin platform status. Network down?")
 
     def test_retrieve_lending_data(self):
         with requests_mock.mock() as m:

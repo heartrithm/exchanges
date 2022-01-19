@@ -1,6 +1,6 @@
 from .apis.binance import BinanceApi, BinanceFuturesApi, BinanceMarginApi
 from .apis.bitfinex import BitfinexApi
-from .apis.kucoin import KucoinApi
+from .apis.kucoin import KuCoinApi
 from .apis.sfox import SFOXApi
 from .apis.shrimpy import ShrimpyApi
 
@@ -15,7 +15,7 @@ def exchange_factory(exchange):
     elif exchange == "binance_futures":
         return BinanceFuturesApi
     elif exchange == "kucoin":
-        return KucoinApi
+        return KuCoinApi
     elif exchange == "sfox":
         return SFOXApi
     elif exchange == "shrimpy":
