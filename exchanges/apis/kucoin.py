@@ -1,7 +1,7 @@
 from .base import BaseExchangeApi, ExchangeApiException
 
 
-class KucoinApi(BaseExchangeApi):
+class KuCoinApi(BaseExchangeApi):
     api_prefix = "api"
 
     def __init__(self, *args, **kwargs):
@@ -34,5 +34,5 @@ class KucoinApi(BaseExchangeApi):
         return self.request(url, method, params, data, headers)
 
 
-class KucoinException(ExchangeApiException):
+class KuCoinException(ExchangeApiException):
     pass
