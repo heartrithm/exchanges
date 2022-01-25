@@ -10,6 +10,9 @@ from ratelimiter import RateLimiter
 
 from .base import BaseExchangeApi, ExchangeApiException
 
+RATE_LIMIT_MAX_CALLS = 45  # https://docs.kucoin.com/#place-a-new-order
+RATE_LIMIT_PERIOD = 3  # seconds
+
 
 class KuCoinApi(BaseExchangeApi):
     api_prefix = "api"
