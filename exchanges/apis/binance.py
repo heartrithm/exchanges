@@ -13,9 +13,6 @@ from .base import BaseExchangeApi, ExchangeApiException
 class BinanceApi(BaseExchangeApi):
     api_prefix = "api"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     @cached(cache=TTLCache(maxsize=32, ttl=300))
     def pull_symbols(self):
         logger.info("Calling live binance API for symbols list")

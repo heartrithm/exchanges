@@ -14,9 +14,9 @@ from .base import BaseExchangeApi, ExchangeApiException
 class KuCoinApi(BaseExchangeApi):
     api_prefix = "api"
 
-    def __init__(self, passphrase=None, *args, **kwargs):
+    def __init__(self, passphrase=None, key=None, secret=None):
         self.passphrase = passphrase
-        super().__init__(*args, **kwargs)
+        super().__init__(key=key, secret=secret)
 
     def brequest(
         self,
