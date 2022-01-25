@@ -44,8 +44,8 @@ class KuCoinApi(BaseExchangeApi):
         url = base_url + api_path
 
         limiter = RateLimiter(
-            max_calls=100,
-            period=10,
+            max_calls=RATE_LIMIT_MAX_CALLS,
+            period=RATE_LIMIT_PERIOD,
             callback=lambda until: logger.info(f"KuCoin call rate limited, sleeping for {until - time.time():.1f}s"),
         )
         with limiter:
