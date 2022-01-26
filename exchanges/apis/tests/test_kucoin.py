@@ -35,3 +35,4 @@ class KuCoinTest(unittest.TestCase):
             m.delete("https://api.kucoin.com/api/v1/orders", json={"code": "200000", "data": {"cancelledOrderIds": []}})
             result = self.client.brequest(1, "orders", True, "DELETE")
             self.assertEqual(result, {"code": "200000", "data": {"cancelledOrderIds": []}})
+            self.assertEqual(self.client.passphrase, "passphrase")
