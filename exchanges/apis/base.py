@@ -88,7 +88,7 @@ class BaseExchangeApi:
         return self._session
 
     def request(self, url, method="GET", params=None, data=None, headers=None):
-        assert method in ["GET", "POST"]
+        assert method in ["GET", "POST", "DELETE"]
         if method == "GET" and not params:
             assert not params, "GET must be used with params"
         if data:
