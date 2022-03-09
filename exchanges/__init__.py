@@ -4,6 +4,7 @@ from .apis.ftx import FTXApi
 from .apis.kucoin import KuCoinApi
 from .apis.sfox import SFOXApi
 from .apis.shrimpy import ShrimpyApi
+from .apis.tardis import TardisApi
 
 
 def exchange_factory(exchange):
@@ -23,5 +24,7 @@ def exchange_factory(exchange):
         return SFOXApi
     elif exchange == "shrimpy":
         return ShrimpyApi
+    elif exchange == "tardis":
+        return TardisApi
     else:  # pragma: no cover
         raise NotImplementedError(f"Exchange '{exchange}' not supported")

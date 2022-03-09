@@ -122,7 +122,11 @@ class BaseExchangeApi:
             )
 
             response.raise_for_status()
-            parsed = json.loads(response.content)
+            if "custom_response_parsing" in self.__dict__:
+                parsed = json.loads(response.content.decode("utf-8").split(
+                    self.response_json_split_char, 1)[self.response_json_index])
+            else:
+                parsed = json.loads(response.content)
             return parsed
         except requests.exceptions.Timeout:  # pragma: no cover
             raise ExchangeApiException(method, url, None, "Connection Timeout")
