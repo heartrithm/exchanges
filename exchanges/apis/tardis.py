@@ -1,4 +1,3 @@
-from typing import Dict
 import time
 
 from loguru import logger
@@ -29,7 +28,7 @@ class TardisApi(BaseExchangeApi):
         data={},
     ):
         assert not endpoint.startswith(
-            (f"/v1", f"v1")
+            ("/v1", "v1")
         ), "endpoint should not be a full path, but the url after v1/"
 
         base_url = "https://api.tardis.dev"
