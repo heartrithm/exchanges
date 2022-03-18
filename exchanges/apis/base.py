@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import json
+import re
 import time
 
 from loguru import logger
@@ -87,6 +88,10 @@ class BaseExchangeApi:
 
         return self._session
 
+    def parse_response(self, response):
+        # subclasses can override for custom parsing
+        return json.loads(response.content)
+
     def request(self, url, method="GET", params=None, data=None, headers=None):
         assert method in ["GET", "POST", "DELETE"]
         if method == "GET" and not params:
@@ -120,13 +125,8 @@ class BaseExchangeApi:
                 timeout=self.TIMEOUT,
                 auth=self.auth_provider,
             )
-
             response.raise_for_status()
-            if "custom_response_parsing" in self.__dict__:
-                parsed = json.loads(response.content.decode("utf-8").split(
-                    self.response_json_split_char, 1)[self.response_json_index])
-            else:
-                parsed = json.loads(response.content)
+            parsed = self.parse_response(response)
             return parsed
         except requests.exceptions.Timeout:  # pragma: no cover
             raise ExchangeApiException(method, url, None, "Connection Timeout")
