@@ -18,5 +18,16 @@ class FTXTest(unittest.TestCase):
                 '[{"future":"BTC-PERP","rate":-0.000013,"time":"2022-01-27T11:00:00+00:00"}]}',
             )
             result = self.client.brequest(1, "funding_rates", params={"future": "BTC-PERP"})
-            self.assertEqual(result, {"success": True, "result": [{"future": "BTC-PERP", "rate": -0.000013,
-                "time": "2022-01-27T11:00:00+00:00"}]})
+            self.assertEqual(
+                result,
+                {
+                    "success": True,
+                    "result": [{"future": "BTC-PERP", "rate": -0.000013, "time": "2022-01-27T11:00:00+00:00"}],
+                },
+            )
+
+    def test_auth(self):
+        with requests_mock.mock() as m:
+            m.post(
+                "https://ftx.com/api/orders",
+            )
