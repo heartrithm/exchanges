@@ -3,6 +3,7 @@ import time
 
 from loguru import logger
 from ratelimiter import RateLimiter
+import arrow
 
 from .base import BaseExchangeApi, ExchangeApiException
 
@@ -12,22 +13,8 @@ RATE_LIMIT_PERIOD = 1  # seconds
 
 class TardisApi(BaseExchangeApi):
 
+    DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"  # seconds resolution
     RESULT_KEY = "result"  # corresponds to market_data sync result_key
-
-    def parse_response(self, response):
-        # Newline-delimited records where the first element of each record
-        # is the tardis write timestamp (which is "%Y-%m-%dT%H:%M:%S.%f" and
-        # always 28 characters) and the second one is the JSON payload.
-        records = response.content.decode("utf-8").split("\n")
-
-        # Take the first record, strip off the timestamp, then parse
-        take_first_record = 0
-        timestamp_length = 28
-        out = json.loads(records[take_first_record][timestamp_length:])
-
-        # Union of stats and info
-        out[self.RESULT_KEY] = out["data"]["stats"] | out["data"]["info"]
-        return out
 
     def brequest(
         self,
@@ -42,10 +29,16 @@ class TardisApi(BaseExchangeApi):
 
         base_url = "https://api.tardis.dev"
         api_path = f"/v{api_version}/{endpoint}"
+        url = base_url + api_path
+
         headers = self.DEFAULT_HEADERS.copy()
         headers.update({"Authorization": f"Bearer {self.key}"})
 
-        url = base_url + api_path
+        if "from" in params:
+            params["from"] = arrow.get(params["from"]).strftime(self.DATE_FORMAT)
+
+        if "to" in params:
+            params["to"] = arrow.get(params["to"]).strftime(self.DATE_FORMAT)
 
         limiter = RateLimiter(
             max_calls=RATE_LIMIT_MAX_CALLS,
@@ -57,6 +50,30 @@ class TardisApi(BaseExchangeApi):
         with limiter:
             return self.request(url, method, params, data, headers)
 
+    def parse_response(self, response):
+        parsed = {self.RESULT_KEY: dict()}
 
-class FTXException(ExchangeApiException):
-    pass
+        response_text = response.content.decode("utf-8")
+        if not response_text:  # no data available
+            logger.warning("empty response, nothing to parse")
+            return parsed
+
+        try:
+            # Newline-delimited text where the first part of each record
+            # is the tardis write timestamp (which is "%Y-%m-%dT%H:%M:%S.%f"
+            # and always 28 characters) and the remaining portion the JSON.
+            records = response_text.split("\n")
+
+            # Take the first record, strip off the timestamp, then parse
+            take_first = 0
+            timestamp_length = 28
+            out = json.loads(records[take_first][timestamp_length:])
+
+            # union of `stats` and `info`
+            parsed[self.RESULT_KEY] = out["data"]["stats"] | out["data"]["info"]
+        except json.decoder.JSONDecodeError as exc:
+            # log malformed response text (hopefully just missing data)
+            logger.exception(str(exc))
+            logger.debug(response_text)
+
+        return parsed
