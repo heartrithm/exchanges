@@ -23,7 +23,7 @@ repos:
         #files: \.py go
         exclude: scripts/
         types: [python]
-        entry: scripts/antipattern-checker.sh
+        entry: ../cryptorithm/scripts/antipattern-checker.sh
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.8.3
     hooks:
