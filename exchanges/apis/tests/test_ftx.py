@@ -1,3 +1,4 @@
+import json
 import unittest
 
 import requests_mock
@@ -7,7 +8,7 @@ from exchanges import exchange_factory
 
 class FTXTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
-        self.client = exchange_factory("ftx")("key", "secret")
+        self.client = exchange_factory("ftx")(key="key", secret="secret")
         super(FTXTest, self).__init__(*args, **kwargs)
 
     def test_get_funding_data(self):
@@ -30,4 +31,29 @@ class FTXTest(unittest.TestCase):
         with requests_mock.mock() as m:
             m.post(
                 "https://ftx.com/api/orders",
+                headers={"FTX-KEY": "secret"},
+                text=json.dumps(
+                    {
+                        "success": True,
+                        "result": {
+                            "createdAt": "2019-03-05T09:56:55.728933+00:00",
+                            "filledSize": 0,
+                            "future": "XRP-PERP",
+                            "id": 9596912,
+                            "market": "XRP-PERP",
+                            "price": 0.306525,
+                            "remainingSize": 31431,
+                            "side": "sell",
+                            "size": 31431,
+                            "status": "open",
+                            "type": "limit",
+                            "reduceOnly": False,
+                            "ioc": False,
+                            "postOnly": False,
+                            "clientId": None,
+                        },
+                    }
+                ),
             )
+            result = self.client.brequest(1, "orders", True, "POST")
+            self.assertTrue(result["success"])
