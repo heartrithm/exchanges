@@ -51,6 +51,7 @@ class TardisApi(BaseExchangeApi):
             return self.request(url, method, params, data, headers)
 
     def parse_response(self, response):
+        # customize how the response is parsed
         parsed = {self.RESULT_KEY: dict()}
 
         response_text = response.content.decode("utf-8")
