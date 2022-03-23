@@ -15,6 +15,15 @@ repos:
     hooks:
       - id: black
         args: [--line-length=120]
+  - repo: local
+    hooks:
+      - id: antipattern-checker
+        name: antipattern-checker
+        language: script
+        #files: \.py go
+        exclude: scripts/
+        types: [python]
+        entry: scripts/antipattern-checker.sh
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.8.3
     hooks:
