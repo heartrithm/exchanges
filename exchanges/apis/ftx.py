@@ -16,7 +16,7 @@ RATE_LIMIT_PERIOD = 1  # seconds
 class FTXApi(BaseExchangeApi):
     api_prefix = "api"
 
-    def __init__(self, passphrase=None, subaccount=None, key=None, secret=None):
+    def __init__(self, key=None, secret=None, passphrase=None, subaccount=None):
         self.passphrase = passphrase
         self.subaccount = subaccount
         super().__init__(key=key, secret=secret)
@@ -62,7 +62,7 @@ class FTXApi(BaseExchangeApi):
         signature = hmac.new(self.secret.encode(), signature_payload, "sha256").hexdigest()
 
         out = {
-            "FTX-KEY": self.secret,
+            "FTX-KEY": self.secret,  # Note the difference in naming convention
             "FTX-SIGN": signature,
             "FTX-TS": str(ts),
         }
