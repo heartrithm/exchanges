@@ -1,4 +1,3 @@
-from typing import Dict
 import hmac
 import json
 import time
@@ -51,7 +50,7 @@ class FTXApi(BaseExchangeApi):
         with limiter:
             return self.request(url, method, params, data, headers)
 
-    def auth_headers(self, method: str, api_path: str, payload: Dict = None):
+    def auth_headers(self, method: str, api_path: str, payload: dict = None):
         ts = int(time.time() * 1000)
         signature_payload = f"{ts}{method}{api_path}"
 
