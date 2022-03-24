@@ -1,5 +1,7 @@
-from typing import Dict
+import hmac
+import json
 import time
+import urllib
 
 from loguru import logger
 from ratelimiter import RateLimiter
@@ -13,8 +15,9 @@ RATE_LIMIT_PERIOD = 1  # seconds
 class FTXApi(BaseExchangeApi):
     api_prefix = "api"
 
-    def __init__(self, passphrase=None, key=None, secret=None):
+    def __init__(self, key=None, secret=None, passphrase=None, subaccount=None):
         self.passphrase = passphrase
+        self.subaccount = subaccount
         super().__init__(key=key, secret=secret)
 
     def brequest(
@@ -35,8 +38,7 @@ class FTXApi(BaseExchangeApi):
         headers = self.DEFAULT_HEADERS.copy()
 
         if authenticate:
-            ...
-            #headers.update(self.auth_headers(api_version, method, api_path, data))
+            headers = headers | self.auth_headers(method, api_path, data)
 
         url = base_url + api_path
 
@@ -48,8 +50,25 @@ class FTXApi(BaseExchangeApi):
         with limiter:
             return self.request(url, method, params, data, headers)
 
-    def auth_headers(self, api_version: int, method: str, api_path: str, payload: Dict):
-        ...
+    def auth_headers(self, method: str, api_path: str, payload: dict = None):
+        ts = int(time.time() * 1000)
+        signature_payload = f"{ts}{method}{api_path}"
+
+        if payload:
+            signature_payload += json.dumps(payload)
+
+        signature_payload = signature_payload.encode()
+        signature = hmac.new(self.secret.encode(), signature_payload, "sha256").hexdigest()
+
+        out = {
+            "FTX-KEY": self.secret,  # Note the difference in naming convention
+            "FTX-SIGN": signature,
+            "FTX-TS": str(ts),
+        }
+
+        if self.subaccount:
+            out["FTX-SUBACCOUNT"] = urllib.parse.quote(self.subaccount)
+        return out
 
 
 class FTXException(ExchangeApiException):
