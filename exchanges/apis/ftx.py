@@ -15,8 +15,7 @@ RATE_LIMIT_PERIOD = 1  # seconds
 class FTXApi(BaseExchangeApi):
     api_prefix = "api"
 
-    def __init__(self, key=None, secret=None, passphrase=None, subaccount=None):
-        self.passphrase = passphrase
+    def __init__(self, key=None, secret=None, subaccount=None):
         self.subaccount = subaccount
         super().__init__(key=key, secret=secret)
 
