@@ -87,7 +87,7 @@ class BaseExchangeApi:
 
         return self._session
 
-    def request(self, url, method="GET", params=None, data=None, headers=None):
+    def request(self, url, method="GET", params=None, data=None, headers=None, ignore_json=False):
         assert method in ["GET", "POST", "DELETE"]
         if method == "GET" and not params:
             assert not params, "GET must be used with params"
@@ -101,12 +101,16 @@ class BaseExchangeApi:
         # If a string is passed in for data, assume it is already json as a string,
         # otherwise, assume it's a complex type and we pass it as json so it gets converted
         # Note: ujson strips spaces and breaks bitfinex
-        if data and type(data) != str:
+        if data and not isinstance(data, str):
             json_data = None
             data = json.dumps(data)
         else:
             json_data = data
             data = None
+
+        # Simple workaround to prevent attaching unwanted data to requests
+        if ignore_json:
+            json_data = None
 
         try:
 
