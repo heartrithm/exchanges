@@ -108,7 +108,7 @@ class BaseExchangeApi:
             json_data = data
             data = None
 
-        # Simple workaround to prevent attaching unwanted data to requests
+        # Simple workaround to prevent unwanted data to be attached to requests
         if ignore_json:
             json_data = None
 

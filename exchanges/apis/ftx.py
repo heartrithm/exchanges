@@ -63,7 +63,7 @@ class FTXApi(BaseExchangeApi):
 
         signature = hmac.new(self.secret.encode(), signature_payload, "sha256").hexdigest()
         out = {
-            "FTX-KEY": self.key,  # Note the difference in naming convention
+            "FTX-KEY": self.key,
             "FTX-SIGN": signature,
             "FTX-TS": str(ts),
         }
