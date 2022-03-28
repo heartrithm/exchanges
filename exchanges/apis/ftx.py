@@ -42,7 +42,6 @@ class FTXApi(BaseExchangeApi):
 
         if authenticate:
             headers = self.auth_headers(method, api_path, data)
-            # TODO: check if this works with POST requests
             if method == "GET":
                 ignore_json = True
 
@@ -58,12 +57,12 @@ class FTXApi(BaseExchangeApi):
 
     def auth_headers(self, method: str, api_path: str, payload: dict = None):
         ts = int(time.time() * 1000)
-        signature_payload = f"{ts}{method}{api_path}".encode()
+        signature_payload = f"{ts}{method}{api_path}"
 
         if payload:
             signature_payload += json.dumps(payload)
 
-        signature = hmac.new(self.secret.encode(), signature_payload, "sha256").hexdigest()
+        signature = hmac.new(self.secret.encode(), signature_payload.encode(), "sha256").hexdigest()
         out = {
             "FTX-KEY": self.key,
             "FTX-SIGN": signature,
