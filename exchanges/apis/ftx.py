@@ -41,7 +41,7 @@ class FTXApi(BaseExchangeApi):
         ignore_json = False
 
         if authenticate:
-            headers = self.auth_headers(method, api_path, data)
+            headers = headers | self.auth_headers(method, api_path, data)
             if method == "GET":
                 ignore_json = True
 
