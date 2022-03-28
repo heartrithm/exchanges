@@ -43,7 +43,8 @@ class FTXApi(BaseExchangeApi):
         if authenticate:
             headers = self.auth_headers(method, api_path, data)
             # TODO: check if this works with POST requests
-            ignore_json = True
+            if method == "GET":
+                ignore_json = True
 
         url = base_url + api_path
 
