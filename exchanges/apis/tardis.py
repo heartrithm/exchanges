@@ -51,7 +51,12 @@ class TardisApi(BaseExchangeApi):
             return self.request(url, method, params, data, headers)
 
     def parse_response(self, response):
-        # customize how the response is parsed
+        # Tardis only gives us new-line delimited JSON. The returned response only contains 
+        # 1 minute of data.  When we newline-split the text we have a list with roughly 
+        # 10 elements space about 6 seconds apart.  This means the request only honors 
+        # `from` and for some reason ignores `to`.  Therefore we are forced to make a single 
+        # request for every hour of data we want.  The first element in the list is closest 
+        # to `from` so we'll keep that one and drop the rest.
         parsed = {self.RESULT_KEY: dict()}
 
         response_text = response.content.decode("utf-8")
