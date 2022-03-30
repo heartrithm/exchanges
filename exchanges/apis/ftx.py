@@ -5,6 +5,7 @@ import urllib
 
 from loguru import logger
 from ratelimiter import RateLimiter
+from requests import Request
 
 from .base import BaseExchangeApi, ExchangeApiException
 
@@ -14,6 +15,7 @@ RATE_LIMIT_PERIOD = 1  # seconds
 
 class FTXApi(BaseExchangeApi):
     api_prefix = "api"
+    base_url = "https://ftx.com"
 
     def __init__(self, key=None, secret=None, subaccount=None):
         self.subaccount = subaccount
@@ -35,7 +37,6 @@ class FTXApi(BaseExchangeApi):
         if endpoint.startswith("/"):
             endpoint = endpoint[1:]
 
-        base_url = "https://ftx.com"
         api_path = f"/{self.api_prefix}/{endpoint}"
         headers = self.DEFAULT_HEADERS.copy()
         ignore_json = False
@@ -45,7 +46,7 @@ class FTXApi(BaseExchangeApi):
             if method == "GET":
                 ignore_json = True
 
-        url = base_url + api_path
+        url = self.base_url + api_path
 
         limiter = RateLimiter(
             max_calls=RATE_LIMIT_MAX_CALLS,
@@ -57,10 +58,11 @@ class FTXApi(BaseExchangeApi):
 
     def auth_headers(self, method: str, api_path: str, params: dict = None, payload: dict = None):
         ts = int(time.time() * 1000)
-        if params:
-            params = f"?{urllib.parse.urlencode(params)}"
+        # Use the PreparedRequest to simplify auth
+        req = Request(method, self.base_url + api_path, params=params)
+        prepared = req.prepare()
 
-        signature_payload = f"{ts}{method}{api_path}{params}"
+        signature_payload = f"{ts}{method}{prepared.path_url}"
 
         if payload:
             signature_payload += json.dumps(payload)
