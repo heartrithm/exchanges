@@ -41,7 +41,7 @@ class FTXApi(BaseExchangeApi):
         ignore_json = False
 
         if authenticate:
-            headers = headers | self.auth_headers(method, api_path, data)
+            headers = headers | self.auth_headers(method, api_path, params, data)
             if method == "GET":
                 ignore_json = True
 
@@ -55,9 +55,12 @@ class FTXApi(BaseExchangeApi):
         with limiter:
             return self.request(url, method, params, data, headers, ignore_json)
 
-    def auth_headers(self, method: str, api_path: str, payload: dict = None):
+    def auth_headers(self, method: str, api_path: str, params: dict = None, payload: dict = None):
         ts = int(time.time() * 1000)
-        signature_payload = f"{ts}{method}{api_path}"
+        if params:
+            params = f"?{urllib.parse.urlencode(params)}"
+
+        signature_payload = f"{ts}{method}{api_path}{params}"
 
         if payload:
             signature_payload += json.dumps(payload)
