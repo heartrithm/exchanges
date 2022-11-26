@@ -3,5 +3,5 @@
 black
 flake8
 isort
-pre-commit
 pip-tools
+pre-commit
