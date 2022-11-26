@@ -3,5 +3,6 @@ coverage
 coveralls
 pyflakes
 pytest
+pytest-cov
 pytest-xdist
 requests_mock
