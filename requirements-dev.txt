@@ -1,6 +1,6 @@
 -r requirements.txt
 -r requirements-test.txt
-black==22.8.0  # Sync with .pre-commit-config.yaml
+black==22.10.0  # Sync with .pre-commit-config.yaml
 flake8
 isort
 pip-tools
