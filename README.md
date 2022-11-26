@@ -1,4 +1,5 @@
 # Exchange APIs
+
 <img width="75" align="right" src="https://raw.githubusercontent.com/heartrithm/heart_token/main/assets/heartrithm-logo.png">
 
 [![CircleCI](https://circleci.com/gh/heartrithm/exchanges.svg?style=svg)](https://circleci.com/gh/heartrithm/exchanges)
@@ -8,6 +9,7 @@
 Reliably talk to supported exchange APIs, with a simple raw interface. Handles the barebones communication (authentication, HTTP handling, etc.), as well as some abstraction of common methods. Used in production at [HeartRithm](https://www.heartrithm.com) since 2017.
 
 ## Features
+
 * Retry of `GET` requests upon failure, up to 3 times, with an exponential back-off
 * Robust handling of connection, timeout, and HTTP errors, with grouping to `ExchangeApiException`.
 * Parsing / handling of exchange error messages
@@ -20,7 +22,7 @@ Reliably talk to supported exchange APIs, with a simple raw interface. Handles t
 
 Bitfinex
 
-```
+```python
 from exchanges import exchange_factory
 
 # Public V2
@@ -38,5 +40,6 @@ result = client.brequest(1, "offer/cancel", authenticate=True, method="POST", da
 * Bitfinex, both V1 and V2 versions of the REST API
 * Binance spot API
 * SFOX
-* Coming soon: Binance futures and coinbase
-
+* KuCoin
+* Shrimpy
+* Tardis
