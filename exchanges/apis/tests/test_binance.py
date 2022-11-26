@@ -51,7 +51,7 @@ class BinanceTest(unittest.TestCase):
             self.assertEqual(result, {"amount": "26505.468", "borrowLimit": "200000"})
 
     def test_subclass_urls(self):
-        """ Ensure margin, futures API clients in binance call the right URLs """
+        """Ensure margin, futures API clients in binance call the right URLs"""
         with requests_mock.mock() as m:
             m.get("https://api.binance.com/sapi/v1/noop", text='{"noop": true}')
             self.margin_client.brequest(1, endpoint="noop", method="GET")

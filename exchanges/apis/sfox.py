@@ -14,7 +14,7 @@ class SFOXApi(BaseExchangeApi):
         return self.unmake_symbol(symbol)
 
     def unmake_symbol(self, symbol):
-        """ Just 3 chars support for now.. will likely change soon """
+        """Just 3 chars support for now.. will likely change soon"""
         return f"{symbol[:3]}/{symbol[3:]}".upper()
 
     def make_symbol(self, symbol):
@@ -25,7 +25,7 @@ class SFOXApi(BaseExchangeApi):
         return f"{pieces[0]}{pieces[1]}".lower()
 
     def get_trade_history(self):
-        """ Normalized view of trade history excluding deposits/withdrawals"""
+        """Normalized view of trade history excluding deposits/withdrawals"""
         history = []
         for txn in self.brequest(1, "account/transactions", authenticate=True):
             if txn["action"] not in ["Buy", "Sell"]:

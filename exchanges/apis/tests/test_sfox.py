@@ -26,7 +26,7 @@ class SFOXTest(unittest.TestCase):
             self.assertEqual(result, {"balances": [{"asset": "BTC", "free": "0.10730199", "locked": "0.00000000"}]})
 
     def test__urls(self):
-        """ Ensure candles vs. real API calls hit the right URLs """
+        """Ensure candles vs. real API calls hit the right URLs"""
         with requests_mock.mock() as m:
             m.get("https://chartdata.sfox.com/candlesticks", text='{"noop": true}')
             self.client.brequest(endpoint="candlesticks", method="GET")
