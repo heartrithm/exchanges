@@ -20,7 +20,7 @@ class BaseExchangeApi:
     RETRIES = 3
     RETRY_BACKOFF_FACTOR = 0.5
     DEFAULT_HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
-    # Don't auto retry 429, that means we're going to fast
+    # Don't auto retry 429, that means we're going too fast
     HTTP_STATUSES_TO_RETRY = [408, 420, 500, 501, 502, 503, 504, 520, 521, 522, 523, 524, 525]
 
     def __init__(self, key=None, secret=None):
@@ -154,9 +154,10 @@ class BaseExchangeApi:
         # Exchange-specific error handling
         return response.text
 
-    def nonce(self):
+    def nonce(self, increment=0):
         # Slightly larger than the default so we can continue using the same one for all APIs
-        return str(int(round(time.time() * 10000000)))
+        # Increment prevents nonce too small errors from being raised
+        return str(int(round(time.time() * 10000000)) + increment)
 
     def sign(self, secret, message):
         """Signs the payload with SHA384 algorithm

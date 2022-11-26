@@ -43,13 +43,7 @@ class BitfinexApi(BaseExchangeApi):
             return "t{}{}".format(pieces[0], pieces[1])
 
     def brequest(
-        self,
-        api_version,
-        endpoint=None,
-        authenticate=False,
-        method="GET",
-        params=None,
-        data=None,
+        self, api_version, endpoint=None, authenticate=False, method="GET", params=None, data=None, nonce_increment=0
     ):
         # Inspired by https://raw.githubusercontent.com/faberquisque/pyfinex/master/pyfinex/api.py
         # Handle requests for both v1 and v2 versions of the API with one wrapper
@@ -64,14 +58,14 @@ class BitfinexApi(BaseExchangeApi):
             base_url = "https://api-pub.bitfinex.com"
 
         api_path = "/v%s/%s" % (api_version, endpoint)
-
         headers = self.DEFAULT_HEADERS.copy()
 
         # Required because data for the signature must match the data that is passed in the body as json, even if empty
         data = data or {}
 
         if authenticate:
-            nonce = self.nonce()
+            # Use the retry value to increment the nonce if needed
+            nonce = self.nonce(nonce_increment)
             payload = self.generate_payload(api_version, api_path, nonce, data)
             headers.update(self.auth_headers(self.key, self.secret, api_version, nonce, payload))
 
@@ -89,7 +83,9 @@ class BitfinexApi(BaseExchangeApi):
                 return self.request(url, method, params, data, headers)
         except ExchangeApiException as exc:
             if exc.message in ["nonce: small", "Nonce is too small."]:
-                raise BitfinexNonceException(method, url, exc.status_code, exc.message)
+                if nonce_increment > 3:
+                    raise BitfinexNonceException(method, url, exc.status_code, exc.message)
+                return self.brequest(api_version, endpoint, authenticate, method, params, data, nonce_increment + 1)
             else:
                 raise
 
