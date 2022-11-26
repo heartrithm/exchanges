@@ -4,7 +4,7 @@
 #
 #    pip-compile --annotation-style=line
 #
-arrow==1.1.0
+arrow==1.2.3
     # via -r requirements.in
 cachetools==4.2.2
     # via -r requirements.in
