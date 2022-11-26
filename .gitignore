@@ -1,7 +1,7 @@
-__pycache__*
-*.swp
 *.pyc
+*.swp
 .DS_Store
 .coverage
 .python-version
 .vscode
+__pycache__*
