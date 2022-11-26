@@ -1,18 +1,17 @@
-from .base import BaseExchangeApi, ExchangeApiException
-from cachetools import cached, TTLCache
-from loguru import logger
-import arrow
 import hashlib
 import hmac
-import requests
 import urllib
+
+from cachetools import TTLCache, cached
+from loguru import logger
+import arrow
+import requests
+
+from .base import BaseExchangeApi, ExchangeApiException
 
 
 class BinanceApi(BaseExchangeApi):
     api_prefix = "api"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
     @cached(cache=TTLCache(maxsize=32, ttl=300))
     def pull_symbols(self):

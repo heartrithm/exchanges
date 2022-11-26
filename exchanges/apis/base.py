@@ -1,11 +1,12 @@
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 import hashlib
 import hmac
 import json
-import requests
 import time
+
 from loguru import logger
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+import requests
 
 
 class BaseExchangeApi:
@@ -17,7 +18,7 @@ class BaseExchangeApi:
     # https://requests.readthedocs.io/en/master/user/advanced/#timeouts
     TIMEOUT = (3.05, 30)  # first is connect, second is read
     RETRIES = 3
-    RETRY_BACKOFF_FACTOR = 1
+    RETRY_BACKOFF_FACTOR = 0.5
     DEFAULT_HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
     # Don't auto retry 429, that means we're going too fast
     HTTP_STATUSES_TO_RETRY = [408, 420, 500, 501, 502, 503, 504, 520, 521, 522, 523, 524, 525]
@@ -58,6 +59,18 @@ class BaseExchangeApi:
         if not self._session:
             self._session = requests.Session()
 
+        def log_retry_response(response, *args, **kwargs):
+            elapsed = response.elapsed.total_seconds()
+            if response.status_code in self.HTTP_STATUSES_TO_RETRY:
+                logger.warning(
+                    f"Retrying {response.request.url} ({response.status_code}: "
+                    + f"{response.reason} after {elapsed:.2f}s): {response.text}"
+                )
+            else:
+                logger.debug(f"Request to {response.request.url} took {elapsed:.2f}s")
+
+        self._session.hooks["response"] = [log_retry_response]
+
         retry = Retry(
             total=self.RETRIES + 1,
             read=self.RETRIES,
@@ -74,8 +87,8 @@ class BaseExchangeApi:
 
         return self._session
 
-    def request(self, url, method="GET", params=None, data=None, headers=None):
-        assert method in ["GET", "POST"]
+    def request(self, url, method="GET", params=None, data=None, headers=None, ignore_json=False):
+        assert method in ["GET", "POST", "DELETE"]
         if method == "GET" and not params:
             assert not params, "GET must be used with params"
         if data:
@@ -88,12 +101,16 @@ class BaseExchangeApi:
         # If a string is passed in for data, assume it is already json as a string,
         # otherwise, assume it's a complex type and we pass it as json so it gets converted
         # Note: ujson strips spaces and breaks bitfinex
-        if data and type(data) != str:
+        if data and not isinstance(data, str):
             json_data = None
             data = json.dumps(data)
         else:
             json_data = data
             data = None
+
+        # Simple workaround to prevent unwanted data to be attached to requests
+        if ignore_json:
+            json_data = None
 
         try:
 
@@ -109,7 +126,12 @@ class BaseExchangeApi:
             )
 
             response.raise_for_status()
-            parsed = json.loads(response.content)
+            if "custom_response_parsing" in self.__dict__:
+                parsed = json.loads(
+                    response.content.decode("utf-8").split(self.response_json_split_char, 1)[self.response_json_index]
+                )
+            else:
+                parsed = json.loads(response.content)
             return parsed
         except requests.exceptions.Timeout:  # pragma: no cover
             raise ExchangeApiException(method, url, None, "Connection Timeout")

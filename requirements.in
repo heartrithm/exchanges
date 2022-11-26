@@ -3,3 +3,4 @@ cachetools
 loguru
 requests
 ujson
+ratelimiter

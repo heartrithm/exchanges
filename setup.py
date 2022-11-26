@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
     name="exchanges",
-    version="1.3.6",
+    version="1.3.8",
     description="Exchange APIs",
     packages=find_packages(),
-    install_requires=["arrow", "cachetools", "loguru", "requests", "ujson"],
+    install_requires=["arrow", "cachetools", "loguru", "ratelimiter", "requests", "ujson"],
 )

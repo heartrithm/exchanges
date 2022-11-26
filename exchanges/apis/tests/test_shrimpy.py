@@ -1,7 +1,8 @@
-from exchanges import exchange_factory
+import unittest
 
 import requests_mock
-import unittest
+
+from exchanges import exchange_factory
 
 
 class ShrimpyTest(unittest.TestCase):
