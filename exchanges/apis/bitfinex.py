@@ -1,9 +1,7 @@
 import base64
 import json
 import re
-import time
 
-from loguru import logger
 import ujson
 
 from .base import BaseExchangeApi, ExchangeApiException
