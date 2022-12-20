@@ -6,12 +6,8 @@ import json
 import time
 
 from loguru import logger
-from ratelimiter import RateLimiter
 
 from .base import BaseExchangeApi, ExchangeApiException
-
-RATE_LIMIT_MAX_CALLS = 45  # https://docs.kucoin.com/#place-a-new-order
-RATE_LIMIT_PERIOD = 3  # seconds
 
 
 class KuCoinApi(BaseExchangeApi):
@@ -43,13 +39,7 @@ class KuCoinApi(BaseExchangeApi):
 
         url = base_url + api_path
 
-        limiter = RateLimiter(
-            max_calls=RATE_LIMIT_MAX_CALLS,
-            period=RATE_LIMIT_PERIOD,
-            callback=lambda until: logger.info(f"KuCoin call rate limited, sleeping for {until - time.time():.1f}s"),
-        )
-        with limiter:
-            return self.request(url, method, params, data, headers)
+        return self.request(url, method, params, data, headers)
 
     def auth_headers(self, api_version: int, method: str, api_path: str, payload: Dict):
         """Refer to https://docs.kucoin.com/#authentication for more details"""

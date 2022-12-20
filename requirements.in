@@ -1,6 +1,5 @@
 arrow
 cachetools
 loguru
-ratelimiter
 requests
 ujson

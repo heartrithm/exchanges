@@ -1,13 +1,6 @@
 import json
-import time
-
-from loguru import logger
-from ratelimiter import RateLimiter
 
 from .base import BaseExchangeApi, ExchangeApiException
-
-RATE_LIMIT_MAX_CALLS = 100
-RATE_LIMIT_PERIOD = 1  # seconds
 
 
 class TardisApi(BaseExchangeApi):
@@ -47,15 +40,7 @@ class TardisApi(BaseExchangeApi):
 
         url = base_url + api_path
 
-        limiter = RateLimiter(
-            max_calls=RATE_LIMIT_MAX_CALLS,
-            period=RATE_LIMIT_PERIOD,
-            callback=lambda until: logger.info(
-                f"Tardis.dev call rate limited, sleeping for {until - time.time():.1f}s"
-            ),
-        )
-        with limiter:
-            return self.request(url, method, params, data, headers)
+        return self.request(url, method, params, data, headers)
 
 
 class FTXException(ExchangeApiException):

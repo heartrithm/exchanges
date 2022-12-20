@@ -4,7 +4,6 @@ import re
 import time
 
 from loguru import logger
-from ratelimiter import RateLimiter
 import ujson
 
 from .base import BaseExchangeApi, ExchangeApiException
@@ -71,16 +70,8 @@ class BitfinexApi(BaseExchangeApi):
 
         url = base_url + api_path
 
-        # Limit calls to bitfinex to one per second to make sure nonces don't get confused
-        limiter = RateLimiter(
-            max_calls=1,
-            period=1,
-            callback=lambda until: logger.info(f"Bitfinex call rate limited, sleeping for {until - time.time():.1f}s"),
-        )
-
         try:
-            with limiter:
-                return self.request(url, method, params, data, headers)
+            return self.request(url, method, params, data, headers)
         except ExchangeApiException as exc:
             if exc.message in ["nonce: small", "Nonce is too small."]:
                 if nonce_increment > 3:

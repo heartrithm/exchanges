@@ -8,5 +8,5 @@ setup(
     description="Cryptocurrency Exchange APIs",
     python_requires=">=3.7",
     packages=find_packages(),
-    install_requires=["arrow", "cachetools", "loguru", "ratelimiter", "requests", "ujson"],
+    install_requires=["arrow", "cachetools", "loguru", "requests", "ujson"],
 )
