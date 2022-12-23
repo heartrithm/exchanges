@@ -5,8 +5,6 @@ import hmac
 import json
 import time
 
-from loguru import logger
-
 from .base import BaseExchangeApi, ExchangeApiException
 
 
