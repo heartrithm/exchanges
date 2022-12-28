@@ -180,4 +180,6 @@ class ExchangeApiException(Exception):
         self.url = url
         self.status_code = status_code
         self.message = message
-        super().__init__(f"{method} {url} returned status code {status_code} with message: {message}")
+
+    def __str__(self):
+        return f"{self.method} {self.url} returned status code {self.status_code} with message: {self.message}"
