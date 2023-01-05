@@ -16,7 +16,7 @@ class BaseExchangeApi:
 
     # Settings
     # https://requests.readthedocs.io/en/master/user/advanced/#timeouts
-    TIMEOUT = (3.05, 30)  # first is connect, second is read
+    TIMEOUT = (7.5, 30)  # first is connect, second is read
     RETRIES = 3
     RETRY_BACKOFF_FACTOR = 0.5
     DEFAULT_HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
