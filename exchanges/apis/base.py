@@ -1,11 +1,11 @@
 import hashlib
 import hmac
 import json
-import time
 
 from loguru import logger
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+import arrow
 import requests
 
 
@@ -40,15 +40,15 @@ class BaseExchangeApi:
     def get_trade_history(self):
         """Normalized view of executed trade history across exchanges - excludes deposits/withdrawals
         Format: [{"exchange_txn_id": str,
-                 "client_order_id": str,  # if present
-                 "time": arrow,
-                 "action": str,  # ("buy" or "sell")
-                 "stake_curr": str,
-                 "trade_curr": str,
-                 "amount": Decimal,
-                 "price": Decimal,  # price per unit of trade_curr
-                 "fees": Decimal,  # Always in stake_curr
-                 }, ...]
+                    "client_order_id": str,  # if present
+                    "time": arrow,
+                    "action": str,  # ("buy" or "sell")
+                    "stake_curr": str,
+                    "trade_curr": str,
+                    "amount": Decimal,
+                    "price": Decimal,  # price per unit of trade_curr
+                    "fees": Decimal,  # Always in stake_curr
+                }, ...]
         """
         raise NotImplementedError
 
@@ -157,7 +157,7 @@ class BaseExchangeApi:
     def nonce(self, increment=0):
         # Slightly larger than the default so we can continue using the same one for all APIs
         # Increment prevents nonce too small errors from being raised
-        return str(int(round(time.time() * 10000000)) + increment)
+        return str(int(round(arrow.utcnow().float_timestamp * 10000000)) + increment)
 
     def sign(self, secret, message):
         """Signs the payload with SHA384 algorithm
