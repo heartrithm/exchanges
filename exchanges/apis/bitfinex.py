@@ -8,6 +8,9 @@ from .base import BaseExchangeApi, ExchangeApiException
 
 
 class BitfinexApi(BaseExchangeApi):
+    # Don't retry 500, as Bitfinex will return that for errors that we should not retry
+    HTTP_STATUSES_TO_RETRY = [408, 420, 501, 502, 503, 504, 520, 521, 522, 523, 524, 525]
+
     def get_symbol(self, stake_currency, trade_currency):
         return self.make_symbol(trade_currency + "/" + stake_currency)
 
