@@ -15,5 +15,6 @@ updates:
       interval: "weekly"
       day: "wednesday"
     # Ignore patch versions of dependencies
-    dependency-name: "*"
-    update-types: ["version-update:semver-patch"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
