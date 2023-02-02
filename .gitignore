@@ -2,6 +2,7 @@
 *.swp
 .DS_Store
 .coverage
+.pytest_cache
 .python-version
 .vscode
 __pycache__*
